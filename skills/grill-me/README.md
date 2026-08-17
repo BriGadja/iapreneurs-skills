@@ -19,32 +19,49 @@ vous êtes d'accord.
 Ouvrez Claude Code (n'importe où) et collez ceci :
 
 ```
-Installe le skill « grill-me » de la Boîte à Skills IAPreneurs. Procède ainsi :
+Installe le skill « grill-me » de la Boîte à Skills IAPreneurs.
 
-1. Lis https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/skills.json
-   et trouve l'entrée « grill-me ». Elle te donne la liste exacte des fichiers.
+1. Lis l'index https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/skills.json et prends l'entrée « grill-me » : elle donne la liste
+   exacte des fichiers de ce skill.
 
-2. Pour CHAQUE fichier listé, lis-le à l'adresse
-   https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<le chemin du fichier>
-   puis écris-le dans mon dossier personnel Claude, en retirant le préfixe « skills/ » :
-   « skills/grill-me/SKILL.md » devient « ~/.claude/skills/grill-me/SKILL.md » chez moi.
-   Sous Windows, c'est C:\Users\<mon nom>\.claude\skills\grill-me\.
-   Crée les sous-dossiers manquants. Écris les fichiers À L'IDENTIQUE.
+2. TÉLÉCHARGE chaque fichier de la liste. Ne le recopie pas de tête, ne le reformule pas.
+   Utilise le shell dont tu disposes :
 
-3. Si l'entrée a des « prerequis », vérifie s'ils sont présents et dis-moi quoi installer
-   s'il en manque, avec la commande pour MON système. N'installe rien sans me demander.
+   - Bash (macOS, Linux, WSL, Git Bash) :
+       mkdir -p ~/.claude/skills/grill-me
+       curl -fsSL https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<chemin du fichier> -o ~/.claude/skills/grill-me/<nom du fichier>
 
-4. INTERDIT : si tu n'arrives pas à lire une de ces adresses, ARRÊTE-TOI et dis-le-moi.
-   N'écris jamais un skill de mémoire ni « une version équivalente ».
+   - PowerShell (Windows sans Git for Windows) :
+       New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\grill-me"
+       Invoke-WebRequest -Uri https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<chemin> -OutFile "$env:USERPROFILE\.claude\skills\grill-me\<fichier>"
 
-5. Termine par la liste des fichiers écrits et la phrase à taper pour lancer le skill.
+   Le préfixe « skills/ » du dépôt disparaît à l'arrivée :
+   « skills/grill-me/SKILL.md » devient « ~/.claude/skills/grill-me/SKILL.md ».
+   Certains skills ont des sous-dossiers (scripts/, references/) : recrée-les à l'identique.
+
+3. PROUVE que ça a marché. Affiche la liste des fichiers écrits avec leur taille, et les trois
+   premières lignes du SKILL.md : il doit commencer par --- et contenir « name: grill-me ».
+   Un fichier vide, absent, ou qui commence par du HTML = l'installation a échoué. Dis-le.
+
+4. INTERDIT : ne fabrique JAMAIS le contenu d'un skill. Si un téléchargement échoue, tu
+   t'arrêtes et tu me le dis. Un skill réécrit de mémoire ressemble au vrai et ne fait pas
+   la même chose — c'est le pire résultat possible, pire qu'une erreur.
+
+5. Si l'entrée a des « prerequis » (outils externes), vérifie s'ils sont présents et dis-moi
+   quoi installer pour MON système. N'installe rien sans mon accord.
+
+6. Termine par la phrase à taper pour lancer le skill, et rappelle-moi de relancer Claude Code
+   pour qu'il apparaisse.
 ```
 
 Puis **relancez Claude Code** : les skills sont lus au démarrage.
 
-Aucun téléchargement, aucun terminal, aucune commande shell — donc identique sur macOS, Linux,
-Windows et WSL. Pour mettre à jour plus tard, voir
-[INSTALLER.md](../../INSTALLER.md#le-prompt-de-mise-à-jour).
+Claude télécharge les fichiers avec le shell qu'il a sous la main — `curl` sous macOS, Linux,
+WSL et Git Bash, `Invoke-WebRequest` sous PowerShell. **Chaque machine a l'un des deux** : vous
+n'avez besoin ni de Git, ni de Git Bash, ni de WSL, et il n'y a rien à dézipper.
+
+Pour mettre à jour plus tard, voir [INSTALLER.md](../../INSTALLER.md#le-prompt-de-mise-à-jour) —
+une installation est une **copie**, elle ne se met pas à jour toute seule.
 
 ## Prérequis
 

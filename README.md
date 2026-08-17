@@ -3,9 +3,10 @@
 Des raccourcis prêts à l'emploi pour Claude Code. Un dossier = un skill = une tâche. Vous en
 installez un en collant un prompt, et vous l'avez pour toujours dans tous vos projets.
 
-**Aucun téléchargement, aucun zip, aucun terminal à préparer.** L'installation passe par un
-prompt que Claude exécute lui-même : elle marche donc identiquement sur macOS, Linux, Windows
-et WSL.
+**Aucun zip, aucun dossier à préparer.** L'installation passe par un prompt que Claude exécute
+lui-même : il lit l'index, télécharge les fichiers avec `curl` ou `Invoke-WebRequest` selon la
+machine, et prouve ce qu'il a écrit. Elle marche donc identiquement sur macOS, Linux, Windows et
+WSL — **y compris sur un Windows sans Git**, où Claude Code passe par PowerShell.
 
 ## Installer un skill
 

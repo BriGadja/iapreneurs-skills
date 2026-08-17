@@ -4,39 +4,49 @@
 > ci-dessous **en remplaçant `NOM-DU-SKILL`** par celui que vous voulez :
 > `roast`, `yt-vibe`, `grill-me` ou `nouveau-skill`.
 >
-> Rien à télécharger, rien à dézipper, aucun terminal à préparer. Ça marche sur macOS, Linux,
-> Windows et WSL — le prompt n'utilise aucune commande shell.
+> Rien à dézipper, aucun dossier à préparer. Le prompt fait télécharger les fichiers par Claude,
+> avec le shell qu'il a sous la main : `curl` sous macOS, Linux, WSL et Git Bash ;
+> `Invoke-WebRequest` sous PowerShell. **Chaque machine a l'un des deux** — vous n'avez donc
+> besoin ni de Git, ni de Git Bash, ni de WSL.
 
 ---
 
 ## Le prompt d'installation
 
 ```
-Installe le skill « NOM-DU-SKILL » de la Boîte à Skills IAPreneurs. Procède ainsi :
+Installe le skill « NOM-DU-SKILL » de la Boîte à Skills IAPreneurs.
 
-1. Lis https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/skills.json
-   et trouve l'entrée « NOM-DU-SKILL ». Elle te donne la liste exacte des fichiers.
+1. Lis l'index https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/skills.json et prends l'entrée « NOM-DU-SKILL » : elle donne la liste
+   exacte des fichiers de ce skill.
 
-2. Pour CHAQUE fichier listé, lis-le à l'adresse
-   https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<le chemin du fichier>
-   puis écris-le dans mon dossier personnel Claude, en retirant le préfixe « skills/ » :
-   le fichier « skills/NOM-DU-SKILL/SKILL.md » du dépôt devient
-   « ~/.claude/skills/NOM-DU-SKILL/SKILL.md » chez moi.
-   Sous Windows, c'est C:\Users\<mon nom>\.claude\skills\NOM-DU-SKILL\.
-   Crée les sous-dossiers manquants. Écris les fichiers À L'IDENTIQUE, sans rien reformuler,
-   sans rien raccourcir, sans ajouter de commentaire.
+2. TÉLÉCHARGE chaque fichier de la liste. Ne le recopie pas de tête, ne le reformule pas.
+   Utilise le shell dont tu disposes :
 
-3. Si l'entrée a des « prerequis » (des outils externes), vérifie s'ils sont présents sur ma
-   machine et dis-moi exactement quoi installer s'il en manque, avec la commande pour MON
-   système. N'installe rien sans me demander.
+   - Bash (macOS, Linux, WSL, Git Bash) :
+       mkdir -p ~/.claude/skills/NOM-DU-SKILL
+       curl -fsSL https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<chemin du fichier> -o ~/.claude/skills/NOM-DU-SKILL/<nom du fichier>
 
-4. INTERDIT : si tu n'arrives pas à lire une de ces adresses, ARRÊTE-TOI et dis-le-moi
-   franchement. N'écris jamais un skill de mémoire, ni « une version équivalente », ni un
-   fichier reconstitué de tête. Je dois recevoir le fichier du dépôt ou rien du tout.
+   - PowerShell (Windows sans Git for Windows) :
+       New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\NOM-DU-SKILL"
+       Invoke-WebRequest -Uri https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<chemin> -OutFile "$env:USERPROFILE\.claude\skills\NOM-DU-SKILL\<fichier>"
 
-5. Termine par : la liste des fichiers que tu as réellement écrits (avec leur chemin complet),
-   et la phrase exacte à taper pour lancer le skill. Précise-moi qu'il faut relancer Claude
-   Code pour que la commande apparaisse.
+   Le préfixe « skills/ » du dépôt disparaît à l'arrivée :
+   « skills/NOM-DU-SKILL/SKILL.md » devient « ~/.claude/skills/NOM-DU-SKILL/SKILL.md ».
+   Certains skills ont des sous-dossiers (scripts/, references/) : recrée-les à l'identique.
+
+3. PROUVE que ça a marché. Affiche la liste des fichiers écrits avec leur taille, et les trois
+   premières lignes du SKILL.md : il doit commencer par --- et contenir « name: NOM-DU-SKILL ».
+   Un fichier vide, absent, ou qui commence par du HTML = l'installation a échoué. Dis-le.
+
+4. INTERDIT : ne fabrique JAMAIS le contenu d'un skill. Si un téléchargement échoue, tu
+   t'arrêtes et tu me le dis. Un skill réécrit de mémoire ressemble au vrai et ne fait pas
+   la même chose — c'est le pire résultat possible, pire qu'une erreur.
+
+5. Si l'entrée a des « prerequis » (outils externes), vérifie s'ils sont présents et dis-moi
+   quoi installer pour MON système. N'installe rien sans mon accord.
+
+6. Termine par la phrase à taper pour lancer le skill, et rappelle-moi de relancer Claude Code
+   pour qu'il apparaisse.
 ```
 
 ---
@@ -49,16 +59,16 @@ ne le retéléchargez pas. Ce prompt le fait, pour un skill ou pour tous :
 ```
 Mets à jour mes skills de la Boîte à Skills IAPreneurs.
 
-1. Lis https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/skills.json
+1. Lis l'index https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/skills.json
 2. Regarde lesquels de ces skills j'ai déjà dans ~/.claude/skills/
-   (sous Windows : C:\Users\<mon nom>\.claude\skills\).
-3. Pour chacun d'eux, retélécharge tous ses fichiers depuis
-   https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<chemin>
-   et remplace ma version. Ajoute aussi les fichiers qui sont nouveaux dans la liste.
-4. Dis-moi, skill par skill, ce qui a changé : « identique », « mis à jour », ou
+   (Windows : C:\Users\<mon nom>\.claude\skills\).
+3. Pour chacun, retélécharge TOUS ses fichiers depuis https://raw.githubusercontent.com/BriGadja/iapreneurs-skills/main/<chemin>
+   avec curl (ou Invoke-WebRequest sous PowerShell) et remplace ma version.
+   Ajoute aussi les fichiers qui sont nouveaux dans la liste.
+4. Dis-moi, skill par skill, ce qui a changé : « identique », « mis à jour » ou
    « nouveau fichier ». Si rien n'a bougé, dis-le, ne fais pas semblant.
-5. Même interdiction que pour l'installation : une adresse illisible = tu t'arrêtes et tu me
-   le dis. Tu ne réécris JAMAIS un skill de mémoire.
+5. Même interdiction qu'à l'installation : un téléchargement qui échoue = tu t'arrêtes et tu
+   me le dis. Tu ne réécris JAMAIS un skill de mémoire.
 ```
 
 ---
@@ -76,6 +86,12 @@ point 4 qui l'empêche d'improviser, ne le retirez pas.
 **La commande n'apparaît pas après l'installation** — relancez Claude Code. Les skills sont lus
 au démarrage.
 
-**Windows** — vous n'avez besoin ni de Git, ni de Git Bash, ni de WSL pour installer : ce prompt
-n'utilise que la lecture web et l'écriture de fichiers. En revanche `yt-vibe` a besoin de deux
-outils externes une fois installé, voir son README.
+**Windows** — rien à installer pour que le prompt fonctionne. Sans Git for Windows, Claude Code
+utilise PowerShell, et `Invoke-WebRequest` y est disponible d'origine
+(https://code.claude.com/docs/en/setup). En revanche `/yt-vibe` a besoin de deux outils externes
+**une fois installé** : voir son README.
+
+**Le skill installé ne fait pas ce qu'annonce sa fiche** — vérifiez que le fichier a bien été
+téléchargé et non reconstitué : `~/.claude/skills/<nom>/SKILL.md` doit commencer par `---` et
+faire plusieurs kilooctets. Un fichier court et lisse est un fichier réécrit de mémoire :
+supprimez-le et recommencez.
