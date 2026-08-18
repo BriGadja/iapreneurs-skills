@@ -60,18 +60,45 @@ clients, niveau d'explication ajusté. Tiens-le à jour au fil des créations. S
 
 ### Étape B. Interviewe-le sur CE skill
 
-Une question à la fois, en sautant celles auxquelles son profil ou sa demande répond déjà :
-1. **La tâche** : qu'est-ce qui entre, qu'est-ce qui doit sortir ? Exige un exemple CONCRET,
-   une vraie entrée et la sortie rêvée. Sans exemple, tu construis à l'aveugle.
-2. **Les déclencheurs** : les 3 à 5 phrases qu'il dirait naturellement pour lancer ça.
-3. **La fréquence** : chaque jour, chaque semaine, avant chaque rendez-vous ?
-4. **Ce qui doit être EXACT** : calculs, montants, comptages, dates, formats de fichier ?
-5. **Les dépendances acceptées** : outils déjà installés, binaires à installer, ou zéro ?
-6. **Ce que le skill doit retenir de lui** d'une fois sur l'autre.
-7. **Le livrable** : une réponse dans la conversation, un fichier, les deux ?
+**Commence par ce que tu sais déjà.** Si la conversation en cours contient le travail qu'il veut
+transformer en skill (« fais-en un skill », « je refais ça tout le temps »), c'est ta meilleure
+source : relis-la et extrais-en les outils employés, l'ordre des étapes, les formats d'entrée et
+de sortie observés, et surtout **les corrections qu'il t'a faites en route**, qui disent ce qui
+compte pour lui. Restitue-lui ce que tu en as tiré et fais-le confirmer. Ne repose jamais une
+question dont la réponse est déjà sous tes yeux : c'est le meilleur moyen de perdre sa confiance
+avant d'avoir commencé.
 
-Si ses réponses décrivent deux tâches distinctes, dis-le et propose de découper. Un skill fait
-une chose.
+Complète ensuite, **une question à la fois**, jamais en formulaire, en sautant celles auxquelles
+son profil ou sa demande répond déjà :
+
+1. **La tâche** : qu'est-ce qui entre, qu'est-ce qui doit sortir ? Exige un exemple CONCRET, une
+   vraie entrée et la sortie rêvée. Sans exemple, tu construis à l'aveugle.
+2. **Le déclenchement** : les 3 à 5 phrases qu'il dirait naturellement pour lancer ça. Prends ses
+   mots à lui, pas les tiens : c'est ce qui décidera si le skill part ou reste muet.
+3. **La forme de la sortie** : à quoi ressemble le résultat quand il est parfait ? Une réponse
+   dans la conversation, un fichier, les deux ? Une structure imposée, ou libre ?
+4. **Ce qui doit être EXACT** : calculs, montants, comptages, dates, formats de fichier ?
+5. **Ce qui casse en vrai** : demande-lui les cas tordus qu'il a déjà rencontrés, les entrées
+   incomplètes, les exceptions de son métier. Ce sont eux qui décideront de la qualité du skill,
+   pas le cas nominal.
+6. **La fréquence** : chaque jour, chaque semaine, avant chaque rendez-vous ?
+7. **Les dépendances acceptées** : outils déjà installés, binaires à installer, ou zéro ?
+8. **Ce que le skill doit retenir de lui** d'une fois sur l'autre.
+
+**Ne t'arrête pas à ses réponses littérales : cherche la raison derrière la demande.** Quelqu'un
+qui demande « un skill qui met en forme mes comptes rendus » veut peut-être surtout ne plus les
+oublier. Reformule ce que tu as compris de son besoin réel, en une phrase, et fais-le valider
+avant d'écrire quoi que ce soit. Un skill construit sur la demande de surface fait ce qu'on a
+dit, et pas ce qu'on voulait.
+
+Deux verdicts à poser à la fin de l'interview, à voix haute :
+
+- **Est-ce une tâche ou deux ?** Si ses réponses en décrivent deux, dis-le et propose de découper.
+  Un skill fait une chose.
+- **Sa sortie est-elle vérifiable objectivement** (un fichier, des chiffres, une transformation)
+  **ou subjective** (un ton, un style, une critique) ? Le premier cas se teste par des assertions,
+  le second se juge à l'œil. Ça décide de la forme des tests de l'étape E, dis-lui laquelle tu
+  prévois.
 
 ### Étape C. Regarde ce qui existe avant d'inventer
 
@@ -89,30 +116,55 @@ téléchargé avant de l'installer.
 
 ### Étape D. Construis
 
-Compile A, B et C en un brief complet. `skill-creator` installé, invoque-le avec ce brief ;
-sinon construis toi-même à partir du même brief. Dans les deux cas, le résultat doit obtenir :
+**Avant d'écrire une ligne, lis `references/regles-de-construction.md`.** Ce fichier condense les
+règles du `skill-creator` officiel d'Anthropic et de la documentation Claude Code : divulgation
+progressive, anatomie du dossier, description qui déclenche vraiment, écriture du pourquoi plutôt
+que d'interdictions, refus de surajuster aux exemples de test. Un skill construit sans ces règles
+fonctionne le jour où on l'écrit et déçoit ensuite.
 
-- **Une seule tâche.**
-- **Un déclenchement qui ne demande aucun effort** : ce qui annonce quand l'utiliser doit
-  contenir SES formulations de l'étape B, être impératif, et couvrir le cas où il n'emploie
-  pas le mot évident.
+Compile A, B et C en un brief complet. `skill-creator` installé, invoque-le avec ce brief ; sinon
+construis toi-même à partir du même brief. **Dans les deux cas, la barre est la même**, et c'est à
+toi de la tenir : le résultat doit obtenir
+
+- **Une seule tâche**, et la structure du dossier qui va avec (`scripts/`, `references/`,
+  `assets/` seulement si le skill en a l'usage).
+- **Une description qui déclenche** : elle porte tout le « quand s'en servir », contient SES
+  formulations de l'étape B, et couvre le cas où il n'emploie pas le mot évident. Le vrai risque
+  est qu'elle soit trop tiède, pas trop insistante.
+- **Un corps court**, sous 500 lignes, avec ce qui ne sert qu'à un cas particulier déporté dans
+  `references/` et un mot sur quand aller le lire.
 - **L'exactitude hors du modèle** : tout ce qui relève de l'étape B.4 passe par du code que le
-  skill appelle, et le skill s'interdit noir sur blanc de refaire ce calcul lui-même. Choisis
-  le langage adapté à sa machine, ne le lui demande pas.
-- **Un échec propre** : ce code refuse de produire quoi que ce soit tant qu'une donnée
-  obligatoire manque, et liste TOUT ce qui cloche d'un coup, dans sa langue.
-- **Aucune dépendance surprise** : si le skill a besoin d'un outil externe, il vérifie sa
-  présence avant de s'en servir et dit comment l'installer.
-- **Une mémoire lisible** : ce qu'il retient (étape B.6) tient dans un seul fichier que le
-  membre peut ouvrir, corriger et supprimer. Minimum au premier usage, une question à la fois.
-- **Un réglage de modèle si la version le permet** : tâche courte et répétitive, réglage
-  économe ; analyse exigeante, réglage plus fort ; sinon laisse hériter de la session.
+  skill appelle, et le skill s'interdit noir sur blanc de refaire ce calcul lui-même. Choisis le
+  langage adapté à sa machine, ne le lui demande pas.
+- **Un échec propre** : ce code refuse de produire quoi que ce soit tant qu'une donnée obligatoire
+  manque, et liste TOUT ce qui cloche d'un coup, dans sa langue.
+- **Aucune dépendance surprise** : si le skill a besoin d'un outil externe, il vérifie sa présence
+  avant de s'en servir et dit comment l'installer.
+- **Une mémoire lisible** : ce qu'il retient (étape B.8) tient dans un seul fichier que le membre
+  peut ouvrir, corriger et supprimer. Minimum au premier usage, une question à la fois.
+- **Un réglage de modèle si la version le permet** : tâche courte et répétitive, réglage économe ;
+  analyse exigeante, réglage plus fort ; sinon laisse hériter de la session.
 - **Une sortie qui dit la suite** : le skill se termine en indiquant ce qu'on peut faire après.
+
+Écris un premier jet, puis relis-le à froid comme si tu ne l'avais pas écrit, et coupe ce qui ne
+porte pas son poids. C'est la relecture qui fait la différence, pas le premier jet.
 
 ### Étape E. Prouve-le, ne l'annonce pas
 
-Un skill n'est pas prêt parce qu'il est écrit. Lance **trois** tests réels et montre la sortie
-brute de chacun. Jamais « ça devrait marcher ».
+Un skill n'est pas prêt parce qu'il est écrit. Deux choses se prouvent, et elles sont
+indépendantes : **qu'il parte quand il faut**, et **qu'il fasse ce qu'il doit**. Un skill parfait
+qui ne se déclenche jamais est un skill mort ; un skill qui part toujours et se trompe est pire.
+
+**E1. Le déclenchement.** Reprends les phrases de l'étape B.2, celles que le membre dirait
+vraiment, et montre-lui ce que tu comptes essayer avant de le faire : « voilà les trois phrases sur
+lesquelles je vais tester, elles vous ressemblent ? » Puis vérifie pour chacune que le skill part.
+S'il reste muet sur une formulation naturelle, ce n'est pas la faute du membre : c'est la
+description qu'il faut élargir, pas sa façon de parler. Deux nuances à connaître avant de conclure
+à une panne : Claude ne consulte pas de skill pour une demande qu'il traite trivialement lui-même,
+et il a une tendance générale à sous-déclencher, donc une description tiède est le premier suspect.
+
+**E2. L'exécution.** Lance **trois** tests réels et montre la sortie brute de chacun. Jamais « ça
+devrait marcher ».
 
 1. **Le cas normal** : une vraie donnée de son métier, du début à la fin.
 2. **L'entrée invalide** : incomplète ou mal formée. Le skill doit échouer proprement et lister
@@ -125,6 +177,11 @@ rigoureusement identique. Si elle diffère, soit tu supprimes la source de varia
 rends la sortie rejouable en affichant les valeurs à réinjecter pour reproduire à l'identique.
 
 Un test échoue, tu corriges et tu **rejoues les trois**.
+
+Quand tu corriges, corrige la cause, pas l'exemple. Ajouter une règle qui traite le cas précis qui
+vient d'échouer donne un skill qui passe tes trois tests et rate le quatrième, que le membre
+rencontrera seul, sans toi. Et si les trois tests t'ont vu réécrire trois fois le même bout de
+code, c'est qu'il manque un script dans `scripts/` : écris-le une fois, le skill l'appellera.
 
 ### Étape F. Installe et explique
 

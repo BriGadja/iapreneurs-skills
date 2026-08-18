@@ -1,42 +1,37 @@
-# La Boîte à Skills — IAPreneurs
+# La Boîte à Skills, IAPreneurs
 
-Des raccourcis prêts à l'emploi pour Claude Code. Un dossier = un skill = une tâche. Vous en
-installez un en collant un prompt, et vous l'avez pour toujours dans tous vos projets.
+Des raccourcis prêts à l'emploi pour Claude Code, offerts à la communauté **IAPreneurs**.
+Un dossier = un skill = une tâche.
 
-**Aucun zip, aucun dossier à préparer.** L'installation passe par un prompt que Claude exécute
-lui-même : il lit l'index, télécharge les fichiers avec `curl` ou `Invoke-WebRequest` selon la
-machine, et prouve ce qu'il a écrit. Elle marche donc identiquement sur macOS, Linux, Windows et
-WSL — **y compris sur un Windows sans Git**, où Claude Code passe par PowerShell.
-
-## Installer un skill
-
-Ouvrez Claude Code et collez le prompt de **[INSTALLER.md](INSTALLER.md)**, en remplaçant le nom
-du skill. C'est tout.
-
-Le même fichier contient le **prompt de mise à jour** — pensez-y : une installation est une
-copie, elle ne se met pas à jour toute seule quand on corrige un skill ici.
+Ce dépôt est l'entrepôt : il ne contient que les skills. **L'installation se fait depuis Circle**,
+dans la catégorie *Skills* : chaque tuile porte la description du skill et un prompt à copier dans
+votre session Claude Code, qui va chercher les fichiers ici et les installe chez vous, à
+l'emplacement que vous aurez choisi.
 
 ## Les skills
 
-| Skill | Vous donnez → vous obtenez | Dépendances |
-|-------|----------------------------|-------------|
-| [`/roast`](skills/roast/) | une URL de landing page → une critique cash + exactement 3 correctifs priorisés | 🟢 aucune |
-| [`/yt-vibe`](skills/yt-vibe/) | une URL YouTube → transcript, images clés, analyse du style | 🟡 `yt-dlp` + `ffmpeg` |
-| [`/grill-me`](skills/grill-me/) | une idée floue → un interrogatoire méthodique jusqu'à ce que plus rien ne soit implicite | 🟢 aucune |
-| [`/nouveau-skill`](skills/nouveau-skill/) | une tâche répétitive → un skill construit **et prouvé** par trois tests | 🟢 aucune |
+| Skill | Vous donnez, vous obtenez | Dépendances |
+|-------|---------------------------|-------------|
+| [`/roast`](skills/roast/) | une URL de landing page, une critique cash et exactement 3 correctifs priorisés | 🟢 aucune |
+| [`/grill-me`](skills/grill-me/) | une idée floue, un interrogatoire méthodique jusqu'à ce que plus rien ne soit implicite | 🟢 aucune |
+| [`/nouveau-skill`](skills/nouveau-skill/) | une tâche répétitive, un skill construit **et prouvé** par trois tests | 🟢 aucune |
+| [`/yt-vibe`](skills/yt-vibe/) | une URL YouTube, son transcript, ses images clés, son style | 🟡 `yt-dlp` + `ffmpeg` |
 
-🟢 zéro dépendance, ça marche tout de suite · 🟡 un ou deux outils à installer, le skill vous dit
-lesquels et ne plante jamais sans le dire.
+🟢 marche tout de suite. 🟡 un ou deux outils à installer : le prompt d'installation s'en occupe
+avec vous, et le skill revérifie leur présence à chaque lancement. Il ne plante jamais sans
+expliquer.
 
-Chaque dossier a son propre `README.md` : à quoi ça sert, comment l'utiliser, des exemples de
-prompts à copier-coller, et quoi faire quand ça coince.
+D'autres skills sont écrits et arriveront ici au fil des ateliers.
 
-## Comment c'est fait
+## Installer, mettre à jour, désinstaller
 
-`skills.json` est l'index : pour chaque skill, sa version, ses prérequis et **la liste de ses
-fichiers**. Les prompts d'installation lisent ce fichier en premier, ils n'ont donc jamais de
-liste en dur. Ajouter un fichier à un skill, c'est l'ajouter à l'index — les installations
-suivantes le prennent, sans qu'aucun post publié ne soit à retoucher.
+**Installer** : le prompt est sur Circle, dans la tuile du skill.
+
+**Mettre à jour** : une installation est une copie. Quand un skill est corrigé ici, votre version
+ne bouge pas : recollez le même prompt d'installation, il remplace la vôtre.
+
+**Désinstaller** : supprimez le dossier du skill, par exemple `~/.claude/skills/roast/`. Vous
+pouvez aussi le demander à Claude Code. Tapez `/skills` pour voir ce qui est chargé chez vous.
 
 ## Contribuer
 
@@ -45,5 +40,5 @@ Une idée, un bug, une formulation qui ne déclenche pas ? Dites-le sur Circle, 
 
 ## Licence
 
-MIT — voir [LICENSE](LICENSE). Prenez-les, modifiez-les, revendez les prestations que vous
+MIT, voir [LICENSE](LICENSE). Prenez-les, modifiez-les, revendez les prestations que vous
 construisez avec. C'est le but.
