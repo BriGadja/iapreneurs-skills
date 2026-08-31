@@ -76,6 +76,26 @@ aide-le à partir de ses propres chiffres.
 
 **N'invente JAMAIS un SIRET, un IBAN ou un taux de TVA.** Ces trois-là se demandent, toujours.
 
+**Enfin, l'allure du document.** Une question, trois portes — laisse-le choisir, n'insiste pas :
+
+> « Vous avez déjà un devis type que vous envoyez ? Vous pouvez me le donner et je m'en
+> inspire. Sinon dites-moi juste votre couleur et si vous avez un logo — ou on part sur le
+> modèle simple, il est propre et prêt à envoyer. »
+
+- **Il fournit un devis existant** (PDF, image, capture) → ouvre-le et regarde-le. Reprends-en
+  ce qui est transposable : la **couleur dominante**, le **logo** s'il est dans un fichier à
+  part, et les **mentions de pied de page** qu'il fait figurer (assurance décennale,
+  qualifications, numéro RCS…). Dis-lui ce que tu as repris et ce que tu n'as pas repris.
+- **Il décrit** → sa couleur, son logo s'il en a un, ses mentions habituelles. Deux échanges,
+  pas plus.
+- **Il ne sait pas / s'en fiche** → le modèle par défaut, et on n'en reparle plus.
+
+Trois réglages seulement, et c'est volontaire : `logo` (chemin vers son fichier, embarqué dans
+le document), `couleur` (l'accent) et `pied_de_page` (ses mentions). **Ne modifie jamais le
+gabarit HTML du script** pour reproduire une maquette à l'identique : un devis se juge sur sa
+lisibilité, et retoucher la mise en page casse l'impression sur une page. Si son devis d'origine
+a une structure très différente, dis-le franchement plutôt que de la bricoler.
+
 Écris ensuite `mon-entreprise.json` — les descriptions et les prix sont ceux de l'utilisateur,
 pas des exemples :
 
@@ -83,6 +103,7 @@ pas des exemples :
 {
   "nom": "", "adresse": "", "siret": "", "email": "",
   "telephone": "", "tva_intra": "", "iban": "", "bic": "",
+  "logo": "", "couleur": "", "pied_de_page": "",
   "tva_taux_defaut": 0,
   "prestations_frequentes": [{"description": "", "prix_unitaire": 0}]
 }
@@ -119,18 +140,38 @@ retouchant le HTML. Un montant à corriger = corriger le JSON et relancer. Si le
 erreur, il liste les champs à corriger : corrige-les et relance. **Recopie ses montants tels
 qu'il les affiche.**
 
-## Étape 5. Relire le PDF avant de le livrer
+## Étape 5. Regarder le document avant de le livrer
 
-Le script vérifie déjà son PDF (signature, taille, nombre de pages) et le dit dans sa sortie.
-Fais la vérification qu'il ne peut pas faire : **ouvre le PDF avec l'outil Read et regarde-le.**
+Le script vérifie déjà son PDF (signature, taille, nombre de pages). Fais la vérification qu'il
+ne peut pas faire : **regarde le document.**
 
-Contrôle en le regardant : les deux blocs émetteur / client sont remplis, aucune ligne n'est
-tronquée, les totaux affichés sont bien ceux du script, la mention de TVA correspond au régime,
-le bloc « Bon pour accord » est présent, et le devis tient sur une page. Si quelque chose cloche,
-corrige le JSON et relance — jamais le HTML à la main.
+**Ouvre le PDF avec l'outil Read.** Si Read n'y arrive pas — sur certaines machines il lui
+manque de quoi convertir un PDF en image — **ne cherche pas à installer quoi que ce soit** :
+ouvre le `.html` à la place. C'est le même rendu, c'est lui qui a servi à fabriquer le PDF.
+Dis simplement lequel des deux tu as regardé.
 
-Annonce alors : le fichier produit, le Total HT et TTC **tels que le script les a affichés**, la
-date de fin de validité. C'est le bon moment pour proposer d'enrichir la fiche entreprise.
+Contrôle : les blocs émetteur et client sont remplis, aucune ligne n'est tronquée, les totaux
+sont bien ceux du script, la mention de TVA correspond au régime, le bloc « Bon pour accord »
+est là, et **le tout tient sur une page**. Si quelque chose cloche, corrige le JSON et relance —
+jamais le HTML à la main.
+
+## Étape 6. Livrer, en trois lignes
+
+Le devis est fait : dis-le simplement et arrête-toi.
+
+- Le fichier PDF produit, avec son chemin.
+- Le **Total HT et TTC tels que le script les a affichés**, et la date de fin de validité.
+- Une seule suite possible, courte : proposer d'enrichir la fiche, ou le devis suivant.
+
+🔴 **Ce que la clôture ne contient pas.** Pas de compte rendu de tes vérifications, pas de liste
+des contrôles passés, pas de récapitulatif de ce que tu as compris, pas de mise en garde sur des
+données d'exemple, pas de bilan des difficultés rencontrées. L'utilisateur veut un devis, pas un
+rapport de test : une longue clôture donne l'impression que quelque chose s'est mal passé alors
+que tout va bien.
+
+La seule exception : **quelque chose ne va pas et il doit le savoir** — un montant à revérifier,
+une information manquante, le PDF non généré. Dans ce cas, dis-le en une phrase, en premier, et
+dis quoi faire.
 
 ## Handoff
 

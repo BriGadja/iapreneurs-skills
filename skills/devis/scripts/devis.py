@@ -17,7 +17,8 @@ Usage :
 Entree (JSON) :
 {
   "emetteur": {"nom": "...", "adresse": "...", "siret": "...",
-               "email": "", "telephone": "", "tva_intra": "", "iban": "", "bic": ""},
+               "email": "", "telephone": "", "tva_intra": "", "iban": "", "bic": "",
+               "logo": ""},          # optionnel : chemin png/jpg/svg, embarque en base64
   "client":   {"nom": "...", "adresse": "", "siret": ""},
   "numero":   "2026-001",
   "date":     "2026-08-31",          # ISO ; affichee 31/08/2026
@@ -26,13 +27,19 @@ Entree (JSON) :
   "lignes":   [{"description": "...", "quantite": 1, "prix_unitaire": 450.0}],
   "conditions": "",                  # optionnel : acompte, delais, modalites...
   "notes":    "",                    # optionnel
-  "couleur":  "#6855F8"              # optionnel, accent du document
+  "couleur":  "#6855F8",             # optionnel, accent du document
+  "pied_de_page": ""                 # optionnel : assurance, qualifications, mentions
 }
+
+Apparence : seuls `logo`, `couleur` et `pied_de_page` sont a regler. Le reste du
+gabarit ne se modifie pas a la main -- un devis se juge sur sa lisibilite, pas sur
+sa decoration, et toucher au gabarit c'est risquer la mise en page a l'impression.
 
 Sortie : devis-{numero}.pdf + devis-{numero}.html
 Exit : 0 si OK, 1 si le JSON est invalide (toutes les erreurs listees d'un coup).
 """
 
+import base64
 import json
 import platform
 import re
@@ -221,9 +228,41 @@ def compute(data):
     return lignes, total_ht, taux, tva, total_ht + tva
 
 
-def render(data, lignes, total_ht, taux, tva, ttc) -> str:
+def logo_data_uri(chemin, base: Path):
+    """Embarque le logo dans le HTML en base64.
+
+    Pourquoi embarquer plutot que pointer le fichier : le navigateur headless
+    imprime depuis un contexte ou un chemin relatif ne veut plus rien dire, et un
+    devis envoye par mail doit rester complet une fois le HTML detache du disque.
+    Jamais bloquant : logo introuvable ou illisible -> devis sans logo.
+    """
+    if not chemin:
+        return None
+    p = Path(chemin).expanduser()
+    if not p.is_absolute():
+        p = (base / p).resolve()
+    if not p.is_file():
+        return None
+    mimes = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+             ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml"}
+    mime = mimes.get(p.suffix.lower())
+    if not mime:
+        return None
+    try:
+        donnees = p.read_bytes()
+    except OSError:
+        return None
+    if len(donnees) > 2_000_000:      # un logo de 2 Mo est une photo, pas un logo
+        return None
+    return f"data:{mime};base64,{base64.b64encode(donnees).decode('ascii')}"
+
+
+def render(data, lignes, total_ht, taux, tva, ttc, base: Path = Path(".")) -> str:
     emetteur, client = data["emetteur"], data["client"]
     couleur = data.get("couleur", "#6855F8")
+    logo = logo_data_uri(emetteur.get("logo"), base)
+    logo_html = (f'<img class="logo" src="{logo}" alt="">' if logo else "")
+    pied = data.get("pied_de_page") or emetteur.get("pied_de_page") or ""
     fin_validite = (
         date.fromisoformat(data["date"])
         + timedelta(days=int(data.get("validite_jours", 30)))
@@ -273,6 +312,7 @@ def render(data, lignes, total_ht, taux, tva, ttc) -> str:
   header {{ display: flex; justify-content: space-between; align-items: flex-start;
             border-bottom: 3px solid {couleur}; padding-bottom: 1rem; }}
   h1 {{ color: {couleur}; font-size: 1.6rem; margin: 0; }}
+  .logo {{ max-height: 56px; max-width: 220px; display: block; margin-bottom: .5rem; }}
   .meta {{ text-align: right; }}
   .parties {{ display: flex; justify-content: space-between; gap: 2rem; margin: 1.5rem 0; }}
   .parties h2 {{ font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
@@ -289,9 +329,27 @@ def render(data, lignes, total_ht, taux, tva, ttc) -> str:
                    padding: .8rem; min-height: 110px; font-size: .85rem; color: #444; }}
   footer {{ margin-top: 2rem; font-size: .75rem; color: #666;
             border-top: 1px solid #e5e5e5; padding-top: .8rem; }}
+
+  /* Impression. CE BLOC DOIT RESTER EN DERNIER : une media query n'ajoute aucune
+     specificite, donc place plus haut il serait annule par les regles ci-dessus.
+     Sans lui, le body garde margin:2rem + max-width:720px (~190 mm) alors que la
+     zone utile d'une A4 a 18 mm de marge n'en fait que 174 : le devis debordait
+     sur une 2e page. Trouve sur un devis reel de 7 lignes, le 2026-08-31. */
+  @media print {{
+    body {{ margin: 0; max-width: none; padding: 0; font-size: 13px; }}
+    .logo {{ max-height: 46px; }}
+    header {{ padding-bottom: .7rem; }}
+    .parties {{ margin: 1rem 0; }}
+    table {{ margin: .7rem 0; }}
+    th, td {{ padding: .35rem .5rem; }}
+    .accord {{ margin-top: 1.2rem; }}
+    .accord > div {{ min-height: 90px; }}
+    footer {{ margin-top: 1.2rem; padding-top: .6rem; }}
+    tr, .accord {{ break-inside: avoid; }}
+  }}
 </style></head><body>
 <header>
-  <div><h1>DEVIS</h1><div>N° {data['numero']}</div></div>
+  <div>{logo_html}<h1>DEVIS</h1><div>N° {data['numero']}</div></div>
   <div class="meta">Date d'émission : <strong>{fr_date(data['date'])}</strong><br>
        Valable jusqu'au : <strong>{fr_date(fin_validite)}</strong></div>
 </header>
@@ -318,24 +376,45 @@ def render(data, lignes, total_ht, taux, tva, ttc) -> str:
 <footer>
   Devis gratuit, valable jusqu'au {fr_date(fin_validite)}. L'acceptation du devis
   (mention « Bon pour accord », date et signature) vaut commande aux conditions ci-dessus.
+  {pied}
 </footer>
 </body></html>
 """
 
 
 def make_pdf(html_path: Path):
-    """HTML -> PDF via un navigateur headless. Renvoie (chemin, nom du moteur) ou (None, None)."""
+    """HTML -> PDF via un navigateur headless.
+
+    Renvoie (chemin, nom du moteur, erreur). `erreur` est None en cas de succes ;
+    sinon elle DIT ce qui s'est passe. Distinguer "aucun navigateur" de "le
+    navigateur a echoue" n'est pas cosmetique : la premiere version renvoyait
+    (None, None) dans les deux cas, et le message annoncait un navigateur absent
+    alors qu'Edge etait bien la et refusait d'ecrire. Un message d'erreur qui
+    designe la mauvaise cause coute plus cher que pas de message du tout.
+    """
     exe, nom = find_pdf_engine()
     if not exe:
-        return None, None
-    pdf_path = html_path.with_suffix(".pdf")
+        return None, None, "aucun navigateur trouve"
+
+    # resolve() est OBLIGATOIRE : le navigateur headless resout un chemin relatif
+    # depuis SON repertoire de travail, pas le notre. Un chemin relatif marche par
+    # accident quand les deux coincident, et echoue en "Acces refuse" sinon.
+    pdf_path = html_path.with_suffix(".pdf").resolve()
     cmd = [exe, "--headless", "--disable-gpu", "--no-pdf-header-footer",
            f"--print-to-pdf={pdf_path}", html_path.resolve().as_uri()]
     try:
         subprocess.run(cmd, capture_output=True, timeout=90, check=True)
-    except Exception:
-        return None, None
-    return (pdf_path, nom) if pdf_path.exists() else (None, None)
+    except subprocess.TimeoutExpired:
+        return None, nom, f"{nom} n'a pas repondu en 90 s"
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or b"").decode("utf-8", "replace").strip().splitlines()
+        raison = detail[-1][:160] if detail else f"code de sortie {exc.returncode}"
+        return None, nom, f"{nom} a echoue : {raison}"
+    except OSError as exc:
+        return None, nom, f"{nom} n'a pas pu etre lance : {exc}"
+    if not pdf_path.exists():
+        return None, nom, f"{nom} s'est termine sans ecrire le fichier"
+    return pdf_path, nom, None
 
 
 def verify_pdf(pdf_path: Path):
@@ -359,10 +438,13 @@ def verify_pdf(pdf_path: Path):
     if pages == 0:
         return False, "PDF sans page lisible"
     ko = round(taille / 1024)
-    if pages > 2:
-        return True, (f"{pages} pages, {ko} Ko — attention, un devis tient normalement "
-                      f"sur 1 page : verifie qu'il n'y a pas trop de lignes")
-    return True, f"{pages} page(s), {ko} Ko"
+    # Seuil a 1 et non a 2 : un devis courant tient sur une page, et la 2e page
+    # est justement le symptome du debordement de mise en page corrige plus haut.
+    # Un seuil a 2 laissait passer le defaut en silence (constate le 2026-08-31).
+    if pages > 1:
+        return True, (f"{pages} pages, {ko} Ko — ATTENTION, un devis de cette taille "
+                      f"tient normalement sur 1 page : regarde s'il ne deborde pas")
+    return True, f"{pages} page, {ko} Ko"
 
 
 def main() -> int:
@@ -392,7 +474,9 @@ def main() -> int:
     slug = str(data["numero"]).replace("/", "-").replace(" ", "-")
     outdir.mkdir(parents=True, exist_ok=True)
     html_path = outdir / f"devis-{slug}.html"
-    html_path.write_text(render(data, lignes, total_ht, taux, tva, ttc), encoding="utf-8")
+    html_path.write_text(
+        render(data, lignes, total_ht, taux, tva, ttc, base=Path(args[0]).resolve().parent),
+        encoding="utf-8")
 
     print(f"Total HT  : {eur(total_ht)}")
     if taux == 0:
@@ -402,7 +486,7 @@ def main() -> int:
     print(f"Total TTC : {eur(ttc)}")
     print("(calcules par ce script, en Decimal, au centime — pas par le modele)\n")
 
-    pdf_path, moteur = make_pdf(html_path)
+    pdf_path, moteur, erreur = make_pdf(html_path)
     if pdf_path:
         ok, detail = verify_pdf(pdf_path)
         if ok:
@@ -414,7 +498,7 @@ def main() -> int:
             return 1
     else:
         print(f"HTML : {html_path}")
-        print("PDF  : pas de navigateur trouve pour le generer.")
+        print(f"PDF  : non genere — {erreur}.")
         print("       Ouvre le HTML et fais Ctrl+P -> \"Enregistrer en PDF\" "
               "(rendu identique).")
     return 0
