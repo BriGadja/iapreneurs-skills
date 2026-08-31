@@ -16,10 +16,16 @@ l'emplacement que vous aurez choisi.
 | [`/grill-me`](skills/grill-me/) | une idée floue, un interrogatoire méthodique jusqu'à ce que plus rien ne soit implicite | 🟢 aucune |
 | [`/nouveau-skill`](skills/nouveau-skill/) | une tâche répétitive, un skill construit **et prouvé** par trois tests | 🟢 aucune |
 | [`/yt-vibe`](skills/yt-vibe/) | une URL YouTube, son transcript, ses images clés, son style | 🟡 `yt-dlp` + `ffmpeg` |
+| [`/devis`](skills/devis/) | une mission décrite avec vos mots, un devis PDF calculé au centime | 🟡 `python3` |
 
 🟢 marche tout de suite. 🟡 un ou deux outils à installer : le prompt d'installation s'en occupe
 avec vous, et le skill revérifie leur présence à chaque lancement. Il ne plante jamais sans
 expliquer.
+
+**Comment un skill vérifie ses prérequis** : ceux qui dépendent d'un outil externe embarquent un
+`--check`. Vous pouvez le lancer vous-même à tout moment, par exemple
+`python3 ~/.claude/skills/devis/scripts/devis.py --check`. Il liste ce qui est présent, ce qui
+manque, et la commande d'installation **pour votre système** — pas une commande générique.
 
 D'autres skills sont écrits et arriveront ici au fil des ateliers.
 

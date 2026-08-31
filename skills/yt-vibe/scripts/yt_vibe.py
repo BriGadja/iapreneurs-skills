@@ -7,12 +7,13 @@ vidéo YouTube, en utilisant UNIQUEMENT yt-dlp + ffmpeg. Aucune clé API, aucune
 infra Sablia : ça tourne sur la machine d'un membre (IP résidentielle = pas de
 bot-block YouTube).
 
-Le SKILL.md fait l'Étape 0 (`command -v` + `yt-dlp -U`) AVANT d'appeler ce helper.
-Ce script suppose yt-dlp + ffmpeg présents, mais dégrade proprement (jamais de
-plantage cryptique) si une étape échoue : pas de sous-titres -> on continue sur
-les frames + la description.
+Ce script vérifie lui-même ses prérequis (`--check`) : un seul code Python au lieu
+d'un bloc shell par système, donc pas de piège Bash/PowerShell. Il dégrade proprement
+(jamais de plantage cryptique) si une étape échoue : pas de sous-titres -> on continue
+sur les frames + la description.
 
 Usage :
+    python3 yt_vibe.py --check              # vérifie les prérequis, ne télécharge rien
     python3 yt_vibe.py <URL> [--frames N] [--workdir DIR]
                         [--max-duration-min M] [--yes]
 
@@ -29,12 +30,129 @@ Codes de sortie :
 """
 
 import argparse
+import datetime
 import glob
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
+
+# ---------------------------------------------------------------------------
+# Doctor : ce que le skill verifie AVANT de toucher a YouTube.
+# Tout est ici, en Python, donc identique sur Windows, macOS et Linux.
+# ---------------------------------------------------------------------------
+INSTALL = {
+    "Windows": {
+        "yt-dlp": "winget install --id yt-dlp.yt-dlp -e",
+        "ffmpeg": "winget install --id Gyan.FFmpeg -e",
+        "deno": "winget install --id DenoLand.Deno -e",
+    },
+    "Darwin": {
+        "yt-dlp": "brew install yt-dlp",
+        "ffmpeg": "brew install ffmpeg",
+        "deno": "brew install deno",
+    },
+    "Linux": {
+        "yt-dlp": "sudo apt install yt-dlp     (ou : pipx install yt-dlp)",
+        "ffmpeg": "sudo apt install ffmpeg",
+        "deno": "curl -fsSL https://deno.land/install.sh | sh",
+    },
+}
+
+
+def install_cmd(outil):
+    return INSTALL.get(platform.system(), INSTALL["Linux"])[outil]
+
+
+def update_cmd():
+    """La bonne commande de mise a jour DEPEND de la facon dont yt-dlp a ete installe.
+
+    Piege paye le 2026-08-31 : `yt-dlp -U` ne met a jour QUE le binaire autonome.
+    Installe via pip/pipx/brew, il sort en erreur sans rien faire -- et un skill qui
+    avale cette erreur laisse l'utilisateur avec un yt-dlp perime sans le savoir.
+    """
+    chemin = shutil.which("yt-dlp") or ""
+    # Un yt-dlp installe par pip/pipx est un script Python : sa premiere ligne est
+    # un shebang qui pointe vers l'interpreteur, et dit donc QUI l'a installe.
+    shebang = ""
+    try:
+        with open(chemin, "rb") as f:
+            premiere = f.readline()
+        if premiere.startswith(b"#!"):
+            shebang = premiere.decode("utf-8", "replace")
+    except OSError:
+        pass
+    if "pipx" in shebang or "pipx" in chemin:
+        return "pipx upgrade yt-dlp"
+    if "python" in shebang:
+        return "python3 -m pip install -U yt-dlp"
+    if platform.system() == "Windows":
+        return "winget upgrade yt-dlp.yt-dlp"
+    if platform.system() == "Darwin":
+        return "brew upgrade yt-dlp"
+    return "yt-dlp -U     (si installe via pip/pipx : python3 -m pip install -U yt-dlp)"
+
+
+def version_de(outil, args):
+    """Renvoie la premiere ligne de `outil --version`, ou None si absent."""
+    if not shutil.which(outil):
+        return None
+    _, out, err = run([outil] + args, timeout=20)
+    return (out or err).strip().splitlines()[0] if (out or err).strip() else "?"
+
+
+def check():
+    """Dit ce qui est present, ce qui manque, et la commande exacte pour reparer."""
+    print("Verification des prerequis de /yt-vibe\n")
+    manquants = []
+
+    ytdlp = version_de("yt-dlp", ["--version"])
+    if ytdlp:
+        print(f"  [OK] yt-dlp           {ytdlp}")
+        # yt-dlp se version par date (2026.08.19). Perime = il casse sur YouTube.
+        try:
+            pub = datetime.date(*[int(x) for x in ytdlp.split(".")[:3]])
+            age = (datetime.date.today() - pub).days
+            if age > 60:
+                print(f"       ATTENTION : cette version a {age} jours. yt-dlp casse des que")
+                print("       YouTube change quelque chose ; s'il refuse de telecharger,")
+                print(f"       mets-le a jour : {update_cmd()}")
+        except (ValueError, TypeError):
+            pass
+    else:
+        manquants.append("yt-dlp")
+        print("  [!!] yt-dlp           MANQUANT  (il telecharge la video et les sous-titres)")
+        print(f"       -> {install_cmd('yt-dlp')}")
+
+    if shutil.which("ffmpeg"):
+        print("  [OK] ffmpeg           present")
+    else:
+        manquants.append("ffmpeg")
+        print("  [!!] ffmpeg           MANQUANT  (il extrait les images de la video)")
+        print(f"       -> {install_cmd('ffmpeg')}")
+
+    if shutil.which("deno") or shutil.which("node"):
+        print("  [OK] moteur JS        present")
+    else:
+        print("  [--] moteur JS        absent (facultatif aujourd'hui)")
+        print("       yt-dlp s'en passe encore, mais il previent que certains formats")
+        print("       video deviennent invisibles sans lui. A installer seulement si un")
+        print(f"       telechargement echoue sans raison claire : {install_cmd('deno')}")
+
+    print()
+    if manquants:
+        print(f"MANQUE : {', '.join(manquants)}. Installe ce qui est indique ci-dessus.")
+        if platform.system() == "Windows":
+            print("Puis FERME ET RELANCE Claude Code : un programme deja ouvert garde")
+            print("l'ancien PATH et ne verra pas les nouveaux outils.")
+        return 1
+
+    print("Tout est bon. Tu peux lancer /yt-vibe sur une URL YouTube.")
+    print("Rappel : ca marche depuis TA machine (box, wifi, 4G). Depuis un serveur")
+    print("distant, YouTube repond \"confirm you're not a bot\" et rien ne sort.")
+    return 0
 
 
 def run(cmd, **kw):
@@ -160,6 +278,10 @@ def extract_frames(video, workdir, target, duration):
 
 
 def main():
+    # --check se traite avant argparse : il n'a pas besoin d'URL.
+    if "--check" in sys.argv[1:]:
+        sys.exit(check())
+
     ap = argparse.ArgumentParser(description="Pipeline zéro-clé /yt-vibe (yt-dlp + ffmpeg).")
     ap.add_argument("url", help="URL de la vidéo YouTube")
     ap.add_argument("--frames", type=int, default=12, help="nombre de frames clés (défaut 12)")
@@ -215,8 +337,17 @@ def main():
     print("\n".join(lines))
 
     if not frames and not has_caps:
-        print("❌ Ni frames ni transcript produits — rien à analyser. "
-              "Vérifie l'URL (et que tu es sur une IP résidentielle, pas un VPS).",
+        print("\nRien n'a pu être récupéré : ni images, ni transcript.", file=sys.stderr)
+        print("Les deux causes possibles, dans l'ordre :\n", file=sys.stderr)
+        print("  1. Tu n'es pas sur une connexion domestique.", file=sys.stderr)
+        print("     Si le message ci-dessus dit \"Sign in to confirm you're not a bot\",", file=sys.stderr)
+        print("     c'est ça : YouTube bloque les IP de serveurs. Ce skill est fait pour", file=sys.stderr)
+        print("     tourner sur TA machine (box, wifi, 4G), pas sur un VPS.\n", file=sys.stderr)
+        print("  2. yt-dlp est périmé.", file=sys.stderr)
+        print("     Il casse dès que YouTube change quelque chose, et une nouvelle", file=sys.stderr)
+        print(f"     version corrige en général sous quelques jours :\n       {update_cmd()}\n",
+              file=sys.stderr)
+        print("Relance `python3 scripts/yt_vibe.py --check` pour voir où tu en es.",
               file=sys.stderr)
         sys.exit(3)
     sys.exit(0)
