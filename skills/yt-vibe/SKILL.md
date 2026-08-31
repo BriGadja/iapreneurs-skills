@@ -73,14 +73,34 @@ Les sous-titres automatiques écorchent les termes techniques (« and date » po
 code » pour « Claude Code ») : rétablis-les d'après le sujet. Sans transcript, appuie-toi sur les
 images et la description dans `meta.json`.
 
-## Ce qu'il faut dire à l'utilisateur, une fois
+## Livrer, court
+
+L'analyse EST le livrable : ce qui compte, c'est la vibe restituée, pas le récit de la mécanique.
+Termine sur le dossier produit et une suite possible, et arrête-toi.
+
+🔴 **Pas de « notes techniques » en fin de réponse.** Pas de compte rendu des tentatives, pas de
+détail sur le client YouTube employé, pas de rappel des limites quand tout s'est bien passé. Le
+script gère ses replis tout seul et le signale déjà dans sa sortie si besoin. Une clôture chargée
+donne l'impression que ça a été laborieux alors que le résultat est bon.
+
+Deux exceptions, et une seule phrase chacune : **rien n'a pu être récupéré** (dis la cause et la
+suite), ou **le résultat est partiel** — pas de sous-titres, peu d'images — auquel cas dis sur
+quoi ton analyse s'appuie vraiment.
+
+## Ce qu'il faut savoir, sans le réciter
 
 **Ça tourne sur SA machine.** Depuis une box, un wifi ou une 4G, ça marche. Depuis un serveur
-distant, YouTube répond « confirm you're not a bot » et rien ne sort.
+distant, YouTube répond « confirm you're not a bot » et rien ne sort. À dire seulement si la
+question se pose, ou si ça échoue.
 
-**yt-dlp se périme.** Il parle à YouTube, qui change ses protections : quand un téléchargement
-échoue sans raison, c'est presque toujours ça. `--check` donne l'âge de la version et la façon
-dont elle a été installée — de quoi trouver la bonne commande pour cette machine.
+**Les refus de YouTube sont gérés.** yt-dlp se fait passer pour une application YouTube, et
+YouTube en refuse régulièrement une : le téléchargement tombe en 403 pendant que les sous-titres
+passent. Le script essaie plusieurs clients l'un après l'autre et te dit lequel a fonctionné.
+**N'ajoute pas d'options `--extractor-args` toi-même**, c'est déjà fait.
+
+**yt-dlp se périme.** Quand un téléchargement échoue sans raison, c'est souvent ça. `--check`
+donne l'âge de la version et la façon dont elle a été installée — de quoi trouver la bonne
+commande pour cette machine.
 
 ## Handoff
 

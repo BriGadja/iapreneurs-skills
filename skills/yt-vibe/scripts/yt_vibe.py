@@ -50,6 +50,31 @@ import sys
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Echelle de repli sur le client YouTube.
+#
+# yt-dlp se fait passer pour une application YouTube ("player client") afin
+# d'obtenir les URL de la video. YouTube en refuse regulierement un, et le
+# telechargement tombe en 403 alors que TOUT LE RESTE marche -- les sous-titres
+# passent, la video non. C'est un mode de panne recurrent, pas un accident :
+# constate le 2026-08-31 sur une machine domestique, yt-dlp a jour, ou le client
+# par defaut (android_vr) etait refuse et `web_safari,tv` passait.
+#
+# On essaie donc dans l'ordre, et on s'arrete au premier qui rend un fichier.
+# Sur un nom de client devenu invalide, yt-dlp emet un avertissement et l'ignore
+# au lieu d'echouer : cette liste ne peut donc pas casser le skill en vieillissant.
+# Clients declares par l'extracteur (verifie le 2026-08-31) : web, web_safari,
+# web_embedded, web_music, web_creator, android, android_vr, ios, mweb, tv,
+# tv_downgraded, tv_simply.
+# ---------------------------------------------------------------------------
+PLAYER_CLIENTS = [None, "web_safari,tv", "ios", "web"]
+
+
+def client_args(client):
+    """Les arguments yt-dlp pour un client donne. None = le choix par defaut."""
+    return [] if client is None else ["--extractor-args", f"youtube:player_client={client}"]
+
+
 def methode_installation(chemin):
     """Comment yt-dlp a-t-il ete installe ? C'est un FAIT, et il decide de la
     commande de mise a jour -- que la session Claude saura en deduire.
@@ -222,18 +247,44 @@ def fetch_transcript(url, workdir):
 
 
 def download_video(url, workdir):
-    """best<=720p. Renvoie le chemin du fichier vidéo ou None."""
+    """best<=720p, en essayant les clients YouTube l'un apres l'autre.
+
+    Renvoie le chemin du fichier video, ou None si aucun client n'a abouti.
+    """
     out_tmpl = os.path.join(workdir, "video.%(ext)s")
-    rc, _, err = run([
-        "yt-dlp", "-f", "best[height<=720]/best",
-        "--no-warnings", "-o", out_tmpl, url,
-    ])
-    hits = [p for p in glob.glob(os.path.join(workdir, "video.*"))
-            if not p.endswith((".part", ".ytdl"))]
-    if rc != 0 and not hits:
-        print(f"⚠️  téléchargement vidéo échoué ({err.strip()[:200]})", file=sys.stderr)
-        return None
-    return hits[0] if hits else None
+    derniere_erreur = ""
+    # `player_client` est un argument de l'extracteur YOUTUBE : sur une autre URL
+    # il ne veut rien dire, et rejouer 4 fois une panne reseau ne repare rien.
+    est_youtube = any(d in url for d in ("youtube.com", "youtu.be"))
+    echelle = PLAYER_CLIENTS if est_youtube else [None]
+    for client in echelle:
+        rc, _, err = run([
+            "yt-dlp", "-f", "best[height<=720]/best",
+            "--no-warnings", *client_args(client), "-o", out_tmpl, url,
+        ])
+        hits = [p for p in glob.glob(os.path.join(workdir, "video.*"))
+                if not p.endswith((".part", ".ytdl"))]
+        if hits:
+            if client is not None:
+                print(f"ℹ️  téléchargement obtenu via le client YouTube « {client} » "
+                      f"(le client par défaut était refusé)", file=sys.stderr)
+            return hits[0]
+        if rc == 0:
+            break                      # succes annonce sans fichier : inutile d'insister
+        derniere_erreur = err.strip()
+        # On rejoue par defaut : changer de client repare aussi bien un 403 qu'un
+        # "confirm you're not a bot", et les deux se ressemblent peu dans le texte.
+        # (Une premiere version filtrait sur "403|Forbidden|player|client" et ne
+        #  rejouait donc JAMAIS sur le bot-block, dont le message ne contient aucun
+        #  de ces mots. Une heuristique sur du texte d'erreur se trompe ; on essaie.)
+        # Seule exception : ce qui ne peut pas se reparer en changeant de client.
+        if any(motif in derniere_erreur for motif in (
+                "Unsupported URL", "is not a valid URL", "Video unavailable",
+                "Private video", "members-only", "has been removed")):
+            break
+    if derniere_erreur:
+        print(f"⚠️  téléchargement vidéo échoué ({derniere_erreur[:200]})", file=sys.stderr)
+    return None
 
 
 def extract_frames(video, workdir, target, duration):
