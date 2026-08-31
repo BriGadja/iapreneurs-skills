@@ -40,59 +40,55 @@ import subprocess
 import sys
 
 # ---------------------------------------------------------------------------
-# Doctor : ce que le skill verifie AVANT de toucher a YouTube.
-# Tout est ici, en Python, donc identique sur Windows, macOS et Linux.
+# Rapport d'environnement : ce script constate, il ne prescrit pas.
+#
+# Il ne connait ni la distribution, ni le gestionnaire de paquets, ni les droits
+# admin, ni si la machine est un poste local ou un serveur. Ecrire ici des
+# commandes d'installation en dur reviendrait a deviner -- et a se tromper pour
+# tous ceux qui sortent du cas prevu. On rapporte donc des FAITS ; la session
+# Claude de l'utilisateur, qui connait son contexte, decide de la suite.
 # ---------------------------------------------------------------------------
-INSTALL = {
-    "Windows": {
-        "yt-dlp": "winget install --id yt-dlp.yt-dlp -e",
-        "ffmpeg": "winget install --id Gyan.FFmpeg -e",
-        "deno": "winget install --id DenoLand.Deno -e",
-    },
-    "Darwin": {
-        "yt-dlp": "brew install yt-dlp",
-        "ffmpeg": "brew install ffmpeg",
-        "deno": "brew install deno",
-    },
-    "Linux": {
-        "yt-dlp": "sudo apt install yt-dlp     (ou : pipx install yt-dlp)",
-        "ffmpeg": "sudo apt install ffmpeg",
-        "deno": "curl -fsSL https://deno.land/install.sh | sh",
-    },
-}
 
 
-def install_cmd(outil):
-    return INSTALL.get(platform.system(), INSTALL["Linux"])[outil]
-
-
-def update_cmd():
-    """La bonne commande de mise a jour DEPEND de la facon dont yt-dlp a ete installe.
+def methode_installation(chemin):
+    """Comment yt-dlp a-t-il ete installe ? C'est un FAIT, et il decide de la
+    commande de mise a jour -- que la session Claude saura en deduire.
 
     Piege paye le 2026-08-31 : `yt-dlp -U` ne met a jour QUE le binaire autonome.
-    Installe via pip/pipx/brew, il sort en erreur sans rien faire -- et un skill qui
+    Installe via pip/pipx/brew, il sort en erreur sans rien faire, et un skill qui
     avale cette erreur laisse l'utilisateur avec un yt-dlp perime sans le savoir.
     """
-    chemin = shutil.which("yt-dlp") or ""
-    # Un yt-dlp installe par pip/pipx est un script Python : sa premiere ligne est
-    # un shebang qui pointe vers l'interpreteur, et dit donc QUI l'a installe.
+    if not chemin:
+        return "inconnue"
     shebang = ""
     try:
         with open(chemin, "rb") as f:
             premiere = f.readline()
         if premiere.startswith(b"#!"):
-            shebang = premiere.decode("utf-8", "replace")
+            shebang = premiere.decode("utf-8", "replace").strip()
     except OSError:
         pass
     if "pipx" in shebang or "pipx" in chemin:
-        return "pipx upgrade yt-dlp"
+        return "pipx (script Python) — `yt-dlp -U` ne fonctionnera PAS dessus"
     if "python" in shebang:
-        return "python3 -m pip install -U yt-dlp"
-    if platform.system() == "Windows":
-        return "winget upgrade yt-dlp.yt-dlp"
-    if platform.system() == "Darwin":
-        return "brew upgrade yt-dlp"
-    return "yt-dlp -U     (si installe via pip/pipx : python3 -m pip install -U yt-dlp)"
+        return "pip (script Python) — `yt-dlp -U` ne fonctionnera PAS dessus"
+    return "binaire autonome ou gestionnaire de paquets systeme"
+
+
+def indices_machine():
+    """Indices sur le type de machine. On les EXPOSE, on ne conclut pas :
+    c'est la session Claude qui sait ou tourne sa session."""
+    indices = []
+    if os.path.exists("/.dockerenv"):
+        indices.append("conteneur Docker detecte (/.dockerenv)")
+    if os.environ.get("WSL_DISTRO_NAME"):
+        indices.append(f"WSL ({os.environ['WSL_DISTRO_NAME']})")
+    if os.environ.get("SSH_CONNECTION"):
+        indices.append("session SSH (machine probablement distante)")
+    if platform.system() == "Linux" and not os.environ.get("DISPLAY") \
+            and not os.environ.get("WAYLAND_DISPLAY"):
+        indices.append("aucun affichage graphique (frequent sur un serveur)")
+    return indices
 
 
 def version_de(outil, args):
@@ -104,54 +100,59 @@ def version_de(outil, args):
 
 
 def check():
-    """Dit ce qui est present, ce qui manque, et la commande exacte pour reparer."""
-    print("Verification des prerequis de /yt-vibe\n")
+    """Rapporte l'etat de la machine. NE PRESCRIT RIEN : voir le commentaire ci-dessus."""
+    print("/yt-vibe — etat de la machine\n")
+
+    print("  Systeme")
+    print(f"    plateforme     {platform.system()} {platform.release()} ({platform.machine()})")
+    print(f"    python3        {platform.python_version()}")
+    for indice in indices_machine():
+        print(f"    indice         {indice}")
+
+    print("\n  Ce dont le skill a besoin")
     manquants = []
 
+    chemin = shutil.which("yt-dlp")
     ytdlp = version_de("yt-dlp", ["--version"])
+    print("    yt-dlp         INDISPENSABLE — telecharge la video et les sous-titres")
     if ytdlp:
-        print(f"  [OK] yt-dlp           {ytdlp}")
+        print(f"                   present : {ytdlp}  ->  {chemin}")
+        print(f"                   installe via : {methode_installation(chemin)}")
         # yt-dlp se version par date (2026.08.19). Perime = il casse sur YouTube.
         try:
             pub = datetime.date(*[int(x) for x in ytdlp.split(".")[:3]])
             age = (datetime.date.today() - pub).days
+            etat = "a jour" if age <= 60 else f"PERIME ({age} jours)"
+            print(f"                   age : {age} jours — {etat}")
             if age > 60:
-                print(f"       ATTENTION : cette version a {age} jours. yt-dlp casse des que")
-                print("       YouTube change quelque chose ; s'il refuse de telecharger,")
-                print(f"       mets-le a jour : {update_cmd()}")
+                print("                   yt-dlp casse des que YouTube change quelque chose ;")
+                print("                   une version ancienne est la 1re cause d'echec.")
         except (ValueError, TypeError):
             pass
     else:
         manquants.append("yt-dlp")
-        print("  [!!] yt-dlp           MANQUANT  (il telecharge la video et les sous-titres)")
-        print(f"       -> {install_cmd('yt-dlp')}")
+        print("                   ABSENT")
 
+    print("    ffmpeg         INDISPENSABLE — extrait les images de la video")
     if shutil.which("ffmpeg"):
-        print("  [OK] ffmpeg           present")
+        print(f"                   present  ->  {shutil.which('ffmpeg')}")
     else:
         manquants.append("ffmpeg")
-        print("  [!!] ffmpeg           MANQUANT  (il extrait les images de la video)")
-        print(f"       -> {install_cmd('ffmpeg')}")
+        print("                   ABSENT")
 
-    if shutil.which("deno") or shutil.which("node"):
-        print("  [OK] moteur JS        present")
-    else:
-        print("  [--] moteur JS        absent (facultatif aujourd'hui)")
-        print("       yt-dlp s'en passe encore, mais il previent que certains formats")
-        print("       video deviennent invisibles sans lui. A installer seulement si un")
-        print(f"       telechargement echoue sans raison claire : {install_cmd('deno')}")
+    js = shutil.which("deno") or shutil.which("node")
+    print("    moteur JS      OPTIONNEL — deno ou node ; yt-dlp previent que certains")
+    print("                   formats video deviennent invisibles sans lui")
+    print(f"                   {'present  ->  ' + js if js else 'absent (non bloquant aujourd hui)'}")
 
-    print()
+    print("\n  Verdict")
     if manquants:
-        print(f"MANQUE : {', '.join(manquants)}. Installe ce qui est indique ci-dessus.")
-        if platform.system() == "Windows":
-            print("Puis FERME ET RELANCE Claude Code : un programme deja ouvert garde")
-            print("l'ancien PATH et ne verra pas les nouveaux outils.")
+        print(f"    MANQUE : {', '.join(manquants)}. Le skill ne peut pas tourner.")
         return 1
-
-    print("Tout est bon. Tu peux lancer /yt-vibe sur une URL YouTube.")
-    print("Rappel : ca marche depuis TA machine (box, wifi, 4G). Depuis un serveur")
-    print("distant, YouTube repond \"confirm you're not a bot\" et rien ne sort.")
+    print("    Les outils sont la.")
+    print("    Reste une condition que ce script ne peut pas verifier : YouTube refuse")
+    print("    les IP de datacenter (\"confirm you're not a bot\"). Depuis une connexion")
+    print("    domestique ca passe ; depuis un serveur, souvent pas.")
     return 0
 
 
@@ -345,10 +346,12 @@ def main():
         print("     tourner sur TA machine (box, wifi, 4G), pas sur un VPS.\n", file=sys.stderr)
         print("  2. yt-dlp est périmé.", file=sys.stderr)
         print("     Il casse dès que YouTube change quelque chose, et une nouvelle", file=sys.stderr)
-        print(f"     version corrige en général sous quelques jours :\n       {update_cmd()}\n",
+        print("     version corrige en général sous quelques jours.\n", file=sys.stderr)
+        print("Lance `python3 scripts/yt_vibe.py --check` : il donne la version installée,",
               file=sys.stderr)
-        print("Relance `python3 scripts/yt_vibe.py --check` pour voir où tu en es.",
+        print("son âge et la façon dont elle a été installée — de quoi trouver la bonne",
               file=sys.stderr)
+        print("commande de mise à jour pour cette machine.", file=sys.stderr)
         sys.exit(3)
     sys.exit(0)
 

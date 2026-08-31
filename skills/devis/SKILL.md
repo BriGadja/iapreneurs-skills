@@ -6,8 +6,9 @@ allowed-tools: Bash(python3 *), Read, Write
 
 # /devis : une mission décrite → un devis PDF, calculé au centime
 
-**Entrée** : ce qu'il y a à chiffrer, dit avec les mots de l'utilisateur (« 3 jours
-d'automatisation à 450 € et une demi-journée de formation, pour ACME, acompte 30 % »).
+**Entrée** : ce qu'il y a à chiffrer, dit avec les mots de l'utilisateur — « un poêle Godin
+posé, avec le tubage et la mise en service, pour les Martin » aussi bien que « 3 jours
+d'intervention à 450 € et une demi-journée de formation, pour ACME, acompte 30 % ».
 **Sortie** : un devis PDF avec numéro, validité, TVA, conditions et bloc « Bon pour accord ».
 
 Deux choses le distinguent : **les totaux sont calculés par un script Python**, jamais par le
@@ -18,53 +19,65 @@ lancement.
 > obligatoire en septembre 2026, émission en septembre 2027) impose une plateforme agréée pour
 > les factures B2B. Le devis, lui, reste libre : c'est LE document à générer soi-même.
 
-## Étape 1. Vérifier les prérequis
+## Étape 1. Regarder la machine
 
 ```bash
 python3 scripts/devis.py --check
 ```
 
-Il vérifie python3 et cherche un navigateur pour fabriquer le PDF (Edge est présent sur tous les
-Windows récents, donc en général il n'y a rien à installer). L'absence de navigateur **n'est pas
-bloquante** : le devis sort en HTML et l'utilisateur fait Ctrl+P → « Enregistrer en PDF ».
+Il **rapporte des faits** — plateforme, python3, présence d'un navigateur pour fabriquer le PDF.
+Il ne prescrit aucune commande d'installation, et c'est voulu : il ne connaît pas cette machine.
 
-## Étape 2. La fiche entreprise — l'onboarding, une seule fois
+**C'est toi qui raisonnes.** L'absence de navigateur n'est jamais bloquante : le devis sort en
+HTML et s'imprime en PDF par Ctrl+P, rendu identique. Si l'utilisateur veut le PDF automatique,
+propose la voie d'installation adaptée à *sa* machine, d'après le rapport et ce que tu sais déjà
+de son environnement — et n'installe rien sans son accord.
 
-Lis `mon-entreprise.json` **dans le dossier de ce skill**.
+## Étape 2. Comprendre son activité — une seule fois
 
-**S'il n'existe pas**, c'est le premier lancement : annonce qu'on va le configurer en quelques
-questions, une fois pour toutes, puis pose-les **une par une** (pas un formulaire d'un bloc) :
+Lis `mon-entreprise.json` **dans le dossier de ce skill**. **S'il existe**, ne repose aucune
+question : va à l'étape 3.
 
-1. Le nom ou la raison sociale, tel qu'il doit apparaître sur le devis.
+**S'il n'existe pas**, c'est le premier lancement. Avant tout, une règle :
+
+> 🔴 **Ne présume JAMAIS ce que cette personne vend.** Ce skill sert un artisan qui installe des
+> poêles à bois aussi bien qu'un consultant qui facture des journées. Un plombier, un
+> photographe, un traiteur, un formateur, une agence : ils n'ont ni les mêmes lignes, ni les
+> mêmes unités, ni les mêmes taux de TVA. Un devis pré-rempli avec le vocabulaire d'un autre
+> métier est pire qu'un devis vide.
+
+**Commence donc par savoir à qui tu parles.** Sers-toi d'abord de ce que tu as déjà : le
+`CLAUDE.md` du projet, l'historique de la conversation, ce que l'utilisateur t'a dit ailleurs.
+Si tu sais déjà quel est son métier, **ne le lui redemande pas** — annonce ce que tu as compris
+et fais-le confirmer en une phrase. Sinon, demande-le simplement : « qu'est-ce que vous vendez,
+et sous quelle forme ? »
+
+Puis pose le reste **une question à la fois**, en adaptant le vocabulaire à ce qu'il t'a répondu :
+
+1. Le nom ou la raison sociale, tel qu'il doit figurer sur le devis.
 2. L'adresse.
 3. Le SIRET.
-4. L'email (et le téléphone, s'il veut le faire figurer).
-5. La TVA : **franchise en base** (le cas de la plupart des micro-entrepreneurs — le devis
-   portera « TVA non applicable, art. 293 B du CGI ») ou **assujetti** (en général 20 %) ?
-6. **Ses prestations habituelles et leurs prix**, avec ses mots, en vrac. C'est la question qui
-   fait gagner le plus de temps ensuite.
-7. L'IBAN et le BIC, s'il veut que le devis affiche les modalités de règlement (facultatif).
+4. L'email, et le téléphone s'il veut le faire figurer.
+5. **La TVA.** Demande son cas, ne le devine pas : franchise en base (le devis portera « TVA non
+   applicable, art. 293 B du CGI »), ou assujetti — et à quel taux. Les taux réduits existent et
+   dépendent de l'activité : un même artisan peut relever de 20 %, 10 % ou 5,5 % selon la nature
+   des travaux. S'il hésite, dis-lui de vérifier auprès de son comptable plutôt que de trancher
+   à sa place.
+6. **Ce qu'il vend habituellement, et à quel prix.** C'est la question qui fait gagner le plus de
+   temps ensuite. Laisse-le répondre avec ses mots et ses unités — une journée, une pièce, un
+   forfait, un mètre carré, une heure. Reformule ses lignes telles qu'elles apparaîtront.
+7. L'IBAN et le BIC, s'il veut afficher les modalités de règlement (facultatif).
 
-**Ne JAMAIS inventer un SIRET, un IBAN ou un taux de TVA.** Si l'information manque, demande-la.
+**S'il ne sait pas quoi facturer**, aide-le à raisonner sur *son* métier : ce qu'il a facturé la
+dernière fois, ce que ça lui coûte, ce que pratiquent ses concurrents directs. **Ne sors pas un
+tarif d'un secteur que tu n'as pas confirmé.** Si tu connais réellement des repères pour son
+métier, donne-les en disant d'où ils viennent ; sinon, dis franchement que tu n'en as pas et
+aide-le à partir de ses propres chiffres.
 
-**Si l'utilisateur ne sait pas quoi facturer** — c'est fréquent, et c'est le moment d'aider —
-propose ces ordres de grandeur du marché français 2026, en disant que ce sont des repères à
-ajuster, pas des tarifs :
+**N'invente JAMAIS un SIRET, un IBAN ou un taux de TVA.** Ces trois-là se demandent, toujours.
 
-| Prestation | Repère | D'où il sort |
-|---|---|---|
-| Journée d'automatisation | 650 € | TJM médian « Automatisation IA », 660 €/j |
-| Journée d'audit / conseil IA | 750 € | TJM médian « Consultant IA » |
-| Forfait d'installation (audit + 1ʳᵉ automatisation + connecteurs) | 2 500 € | build freelance : 1 500 à 4 500 € |
-| Formation, demi-journée | 450 € | — |
-| Maintenance mensuelle, périmètre borné | 600 €/mois | retainer solo/TPE : 400 à 800 €/mois |
-
-Et dis-lui la chose que personne ne lui dira : **le risque n'est pas de vendre trop cher, c'est
-de sous-tarifer la maintenance.** Si le forfait mensuel inclut un point hebdomadaire, descendre
-sous 1 000 €/mois fait travailler à perte. Borner le périmètre (« 4 interventions incluses »)
-est ce qui évite le travail qui gonfle sans que le prix bouge.
-
-Écris ensuite `mon-entreprise.json` :
+Écris ensuite `mon-entreprise.json` — les descriptions et les prix sont ceux de l'utilisateur,
+pas des exemples :
 
 ```json
 {
@@ -75,18 +88,19 @@ est ce qui évite le travail qui gonfle sans que le prix bouge.
 }
 ```
 
-**S'il existe déjà**, ne repose aucune de ces questions : va directement à l'étape 3. Quand une
-prestation nouvelle revient une deuxième fois, propose **une fois** de l'ajouter à la liste.
-L'utilisateur peut ouvrir ce fichier et le corriger à la main ; s'il demande « oublie mes
-infos », supprime-le et dis-le.
+Ensuite, quand une ligne nouvelle revient une deuxième fois, propose **une fois** de l'ajouter à
+`prestations_frequentes`. L'utilisateur peut ouvrir ce fichier et le corriger à la main ; s'il
+demande « oublie mes infos », supprime-le et dis-le.
 
 ## Étape 3. Les informations du devis
 
 Demande ce qui manque, propose des valeurs sensées :
 
-- **Client** : nom, adresse, SIRET si c'est un professionnel.
+- **Client** : nom, adresse, SIRET si c'est un professionnel (un particulier n'en a pas).
 - **Lignes** : description, quantité, prix unitaire HT — pioche dans `prestations_frequentes`
-  dès que ça colle (« ta demi-journée de formation habituelle à 450 € ? »).
+  dès qu'une ligne y ressemble, en la citant telle qu'il l'a formulée (« ta pose de tubage
+  habituelle à 340 € ? »). La quantité porte l'unité de son métier : des jours, des pièces, des
+  mètres, des heures. Mets l'unité dans la description si ce n'est pas évident.
 - **Numéro** : `AAAA-NNN`, en incrémentant le plus grand `devis-*.json` du dossier courant.
 - **Validité** : 30 jours par défaut. **Conditions** : acompte, délais (facultatif).
 

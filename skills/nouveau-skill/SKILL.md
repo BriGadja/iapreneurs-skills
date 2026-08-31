@@ -48,7 +48,9 @@ Quel que soit le résultat, tu continues. Cette étape ne sert qu'à savoir quel
 ### Étape A. Apprends qui est le membre (une seule fois)
 
 Lis `~/.claude/mon-profil.json`. S'il n'existe pas, crée-le en posant ces questions **une à la
-fois**, jamais en formulaire :
+fois**, jamais en formulaire — mais **ne demande pas ce que tu sais déjà** : le `CLAUDE.md` du
+projet, la conversation en cours et l'historique de la session en disent souvent long. Annonce ce
+que tu as compris, fais-le confirmer en une phrase, et ne pose que le reste.
 - son métier et à qui il vend ;
 - les outils de son quotidien ;
 - son niveau technique (débutant, à l'aise, développeur) ;
@@ -138,8 +140,22 @@ toi de la tenir : le résultat doit obtenir
   langage adapté à sa machine, ne le lui demande pas.
 - **Un échec propre** : ce code refuse de produire quoi que ce soit tant qu'une donnée obligatoire
   manque, et liste TOUT ce qui cloche d'un coup, dans sa langue.
-- **Aucune dépendance surprise** : si le skill a besoin d'un outil externe, il vérifie sa présence
-  avant de s'en servir et dit comment l'installer.
+- **Aucune dépendance surprise, et aucune commande devinée.** Si le skill a besoin d'un outil
+  externe, il le vérifie avant de s'en servir — via un `--check` dans son propre script, écrit
+  dans le même langage que lui, jamais un bloc shell par système. Ce `--check` **constate** :
+  plateforme, outil présent ou absent, version, chemin, et les faits qui décident de la suite.
+  Il **ne prescrit pas** la commande d'installation : le skill ignore la distribution, le
+  gestionnaire de paquets et les droits de celui qui l'installe. C'est la session Claude du
+  membre, qui connaît sa machine, qui doit décider — le `SKILL.md` le lui dit explicitement.
+  Distingue ce qui est indispensable de ce qui est optionnel : une dépendance absente qui
+  n'empêche pas de travailler ne doit pas ressembler à une panne.
+- **Aucune présomption sur le métier du membre.** Ce skill peut finir chez un artisan, un
+  commerçant, un photographe, un traiteur — pas seulement chez un consultant en IA. Donc pas de
+  liste de prestations, de tarifs, d'unités ni de taux écrits en dur ; les exemples du `SKILL.md`
+  balaient deux métiers éloignés plutôt qu'un seul, qui se lirait comme une norme. Ce qui dépend
+  de l'activité (un taux de TVA, un prix, une unité) se demande ou se déduit de ce qu'on sait
+  déjà de lui — jamais d'un défaut inventé. **Le test avant de publier** : « si la personne qui
+  l'installe vend des poêles à bois depuis un PC Windows, ce fichier tient-il debout ? »
 - **Une mémoire lisible** : ce qu'il retient (étape B.8) tient dans un seul fichier que le membre
   peut ouvrir, corriger et supprimer. Minimum au premier usage, une question à la fois.
 - **Un réglage de modèle si la version le permet** : tâche courte et répétitive, réglage économe ;

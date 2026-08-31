@@ -12,7 +12,7 @@ une analyse de l'ambiance, du style et du ton.
 Claude « regarde » vraiment la vidéo (il lit les images) et « l'écoute » (il lit le transcript).
 De quoi décortiquer un concurrent, s'inspirer d'un format, réutiliser un style. **Zéro clé API.**
 
-## Étape 1. Vérifier les prérequis
+## Étape 1. Regarder la machine
 
 Toujours en premier, à chaque lancement :
 
@@ -20,12 +20,27 @@ Toujours en premier, à chaque lancement :
 python3 scripts/yt_vibe.py --check
 ```
 
-Il dit ce qui est présent, ce qui manque, et **la commande exacte pour le système de
-l'utilisateur**. S'il sort en erreur, montre sa sortie telle quelle, propose d'installer ce qui
-manque, et **arrête-toi là**. Ne lance jamais le pipeline « pour voir ».
+Il **rapporte des faits** — plateforme, outils présents ou absents, versions, chemins, méthode
+d'installation de yt-dlp, indices de machine distante. Il ne prescrit rien, et c'est voulu :
+il ne connaît ni la distribution, ni le gestionnaire de paquets, ni les droits de l'utilisateur.
 
-Sous Windows, après une installation, il faut fermer et relancer Claude Code : un programme déjà
-ouvert garde l'ancien PATH.
+**C'est toi qui raisonnes**, parce que tu connais cet environnement et pas lui. À partir de son
+rapport et de ce que tu sais déjà de cette machine (le `CLAUDE.md` du projet, l'historique de la
+session, ce que l'utilisateur t'a dit) :
+
+- **Un outil indispensable manque** → propose la voie d'installation qui convient *à cette
+  machine-là* : le gestionnaire de paquets réellement utilisé, avec ou sans `sudo`, en tenant
+  compte du fait que c'est un poste local, un WSL, un conteneur ou un serveur distant.
+  Demande confirmation. **N'installe rien sans accord**, et arrête-toi là : ne lance jamais le
+  pipeline « pour voir ».
+- **yt-dlp est signalé périmé** → la bonne commande de mise à jour dépend de la ligne
+  « installé via » du rapport. `yt-dlp -U` ne met à jour **que** le binaire autonome : sur une
+  installation pip ou pipx, il sort en erreur sans rien faire.
+- **Le rapport signale une machine distante** (SSH, conteneur, pas d'affichage) → préviens
+  l'utilisateur avant de lancer : YouTube refuse les IP de datacenter. Ce n'est pas une panne du
+  skill, et ça ne se contourne pas proprement.
+- **Après une installation sous Windows** → il faut fermer et relancer Claude Code, un programme
+  déjà ouvert garde l'ancien PATH.
 
 ## Étape 2. Lancer le pipeline
 
@@ -64,10 +79,8 @@ images et la description dans `meta.json`.
 distant, YouTube répond « confirm you're not a bot » et rien ne sort.
 
 **yt-dlp se périme.** Il parle à YouTube, qui change ses protections : quand un téléchargement
-échoue sans raison, c'est presque toujours ça. `--check` affiche l'âge de la version installée et
-la bonne commande de mise à jour — qui **dépend de la façon dont yt-dlp a été installé**
-(`yt-dlp -U` ne met à jour que le binaire autonome, et échoue silencieusement sur une install
-pip, pipx ou brew).
+échoue sans raison, c'est presque toujours ça. `--check` donne l'âge de la version et la façon
+dont elle a été installée — de quoi trouver la bonne commande pour cette machine.
 
 ## Handoff
 

@@ -86,37 +86,41 @@ def find_pdf_engine():
     return None, None
 
 
-def install_hint() -> str:
-    """La commande d'installation d'un navigateur, pour LE systeme de l'utilisateur."""
-    systeme = platform.system()
-    if systeme == "Windows":
-        return "winget install Microsoft.Edge"
-    if systeme == "Darwin":
-        return "brew install --cask google-chrome"
-    return "sudo apt install chromium-browser    (ou : sudo dnf install chromium)"
-
-
 def check() -> int:
-    """Doctor : dit ce qui est present, ce qui manque, et comment le reparer."""
-    print("Verification des prerequis de /devis\n")
+    """Rapporte l'etat de la machine. NE PRESCRIT RIEN.
 
-    py = platform.python_version()
-    print(f"  [OK] python3          {py}")
-    print("       c'est lui qui calcule les totaux, il est la, tout ira bien.\n")
+    Ce script ne connait pas la machine de l'utilisateur : distribution, gestionnaire
+    de paquets, droits admin, VPS ou poste local, tout cela varie. Ecrire ici une
+    commande d'installation en dur reviendrait a deviner. On rapporte donc des FAITS,
+    et c'est la session Claude de l'utilisateur -- qui, elle, connait son contexte --
+    qui decide quoi installer et comment.
+    """
+    print("/devis — etat de la machine\n")
+
+    print("  Systeme")
+    print(f"    plateforme     {platform.system()} {platform.release()} ({platform.machine()})")
+    print(f"    python3        {platform.python_version()}  ->  {sys.executable}")
+
+    print("\n  Ce dont le skill a besoin")
+    print("    python3        INDISPENSABLE — il calcule les totaux du devis")
+    print("                   present (c'est lui qui execute ce message)")
 
     exe, nom = find_pdf_engine()
+    print("    navigateur     OPTIONNEL — il transforme le devis en PDF")
     if exe:
-        print(f"  [OK] moteur PDF       {nom}")
-        print("       ton devis sortira directement en PDF, pret a envoyer.\n")
-        print("Tout est bon. Tu peux lancer /devis.")
-        return 0
+        print(f"                   present : {nom}  ->  {exe}")
+    else:
+        print("                   absent : aucun navigateur Chromium trouve")
+        print("                   (cherche dans le PATH et aux emplacements usuels)")
+        print("                   Sans lui, le devis sort en HTML et s'imprime en PDF")
+        print("                   par Ctrl+P. Le rendu est identique.")
 
-    print("  [--] moteur PDF       aucun navigateur trouve")
-    print("       Ce n'est PAS bloquant : le devis sortira en HTML, et tu feras")
-    print("       Ctrl+P puis \"Enregistrer en PDF\" (le rendu est identique).")
-    print("       Pour l'avoir en PDF automatique, installe un navigateur :")
-    print(f"         {install_hint()}\n")
-    print("Tu peux lancer /devis (sortie HTML).")
+    print("\n  Verdict")
+    if exe:
+        print("    Tout est la. Le devis sortira directement en PDF.")
+    else:
+        print("    Rien ne bloque : /devis fonctionne, sortie HTML.")
+        print("    Un navigateur Chromium ajouterait le PDF automatique.")
     return 0
 
 
@@ -124,10 +128,14 @@ def check() -> int:
 # Mise en forme
 # ---------------------------------------------------------------------------
 def num(value: Decimal) -> str:
-    """Decimal -> texte sans zeros inutiles NI notation scientifique.
-    (Piege : Decimal('20').normalize() s'affiche '2E+1'.)"""
+    """Decimal -> texte francais sans zeros inutiles NI notation scientifique.
+    Le separateur decimal est la VIRGULE : le devis part chez un client francais,
+    un taux affiche "5.5 %" fait amateur.
+    (Piege : Decimal('20').normalize() s'affiche '2E+1', d'ou le format 'f'.)"""
     txt = format(value, "f")
-    return txt.rstrip("0").rstrip(".") if "." in txt else txt
+    if "." in txt:
+        txt = txt.rstrip("0").rstrip(".")
+    return txt.replace(".", ",")
 
 
 def eur(value: Decimal) -> str:
@@ -409,7 +417,6 @@ def main() -> int:
         print("PDF  : pas de navigateur trouve pour le generer.")
         print("       Ouvre le HTML et fais Ctrl+P -> \"Enregistrer en PDF\" "
               "(rendu identique).")
-        print(f"       Pour l'automatiser plus tard : {install_hint()}")
     return 0
 
 
