@@ -12,6 +12,7 @@ l'emplacement que vous aurez choisi.
 
 | Skill | Vous donnez, vous obtenez | Dépendances |
 |-------|---------------------------|-------------|
+| [`/prime`](skills/prime/) | rien du tout, le point sur votre projet en trente secondes et par quoi commencer | 🟢 aucune |
 | [`/roast`](skills/roast/) | une URL de landing page, une critique cash et exactement 3 correctifs priorisés | 🟢 aucune |
 | [`/grill-me`](skills/grill-me/) | une idée floue, un interrogatoire méthodique jusqu'à ce que plus rien ne soit implicite | 🟢 aucune |
 | [`/nouveau-skill`](skills/nouveau-skill/) | une tâche répétitive, un skill construit **et prouvé** par trois tests | 🟢 aucune |
