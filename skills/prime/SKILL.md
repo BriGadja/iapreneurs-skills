@@ -110,6 +110,11 @@ de service. Propose de créer les deux, explique en une phrase à quoi chacun se
 qu'on te dit oui. Ne fais pas un interrogatoire pour les remplir : deux ou trois lignes honnêtes
 valent mieux qu'un formulaire, et le reste se remplira tout seul à l'usage.
 
+Demande quand même **ce qu'il y aurait à surveiller**, parce que personne n'y pense de soi-même et
+que c'est ce qui rend le démarrage vivant : les nouveautés de l'outil dont dépend le projet, mais
+aussi l'actualité de son secteur ou ce que fait un concurrent. Une seule question, et tu passes si
+la réponse est « je ne sais pas ».
+
 **Sur un projet qui existe déjà**, ne réécris rien par-dessus. Dis ce qui est là, ce qui manque, et
 propose l'ajout minimal. Si un `CLAUDE.md` existe, **ajoute** le bloc de démarrage à la fin sans
 toucher au reste. Si un `STATUS.md` existe déjà avec un autre format, garde son format.
@@ -124,10 +129,20 @@ Le bloc à ajouter au `CLAUDE.md`, court, adapté à ce projet-ci :
 **À relire à chaque fois** : {les fichiers qui évitent de repartir à côté, avec la raison de
 chacun en quelques mots. Rien si la question ne se pose pas.}
 
-**À surveiller** : {un ou deux sujets sur lesquels regarder ce qui est sorti de neuf. Deux
-maximum : au-delà, le point devient une revue de presse et personne ne le lit. Rien si la
-question ne se pose pas.}
+**À surveiller** : {les sujets sur lesquels regarder ce qui est sorti de neuf à chaque
+démarrage. Ça peut dépasser le projet : l'outil dont tout dépend, le secteur d'activité, un
+concurrent, une réglementation. Deux ou trois suffisent presque toujours ; au-delà, le point
+devient une revue de presse et personne ne le lit. Rien si la question ne se pose pas.}
+
+**À faire aussi au démarrage** : {les étapes ajoutées par la personne, en français, une par
+ligne. Tout ce qui est écrit ici, tu le fais à chaque passage. Vide au début : cette section se
+remplit à l'usage, le jour où elle dit « tiens, fais aussi ça à chaque fois ».}
 ```
+
+🔴 **La dernière section est le cœur du skill, pas un supplément.** C'est par elle que le démarrage
+devient le sien plutôt que le nôtre, et c'est la seule raison pour laquelle il tiendra dans six
+mois. Quand quelqu'un dit en cours de session « fais aussi ça à chaque fois », ne te contente
+jamais de le faire : **propose de l'écrire là**, et écris-le s'il accepte.
 
 Et le `STATUS.md`, qui n'a pas besoin d'être plus compliqué que ça :
 
@@ -170,9 +185,13 @@ Ce que tu dois avoir regardé avant d'écrire une ligne :
 3. Ce qui a bougé depuis la dernière fois : les commits récents s'il y a un git, les fichiers
    modifiés récemment sinon.
 4. Les sujets « à surveiller », une recherche par sujet, pas plus. Ne garde que ce qui est neuf
-   **et** utile à ce projet. Rien d'intéressant ? dis « rien de neuf sur {sujet} » et passe.
+   **et** utile. Rien d'intéressant ? dis « rien de neuf sur {sujet} » et passe.
    🔴 **Chaque trouvaille vient avec son URL complète et cliquable** : une information sans sa
-   source n'est pas vérifiable.
+   source n'est pas vérifiable. C'est aussi ce qui met à jour **la conversation** et pas seulement
+   la personne : tu démarres sur ce qui est vrai aujourd'hui, au lieu de ce que tu crois savoir.
+5. **Tout ce qui est écrit sous « À faire aussi au démarrage ».** Ce sont ses consignes à elle,
+   elles valent les nôtres. Si l'une est devenue impossible (un fichier disparu, un site qui ne
+   répond plus), dis-le en une ligne plutôt que de la sauter en silence.
 
 Puis rends le point, dans cet esprit :
 
