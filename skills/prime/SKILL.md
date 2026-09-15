@@ -11,6 +11,12 @@ allowed-tools: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch, AskUserQuesti
 **Entrée** : rien. Pas d'argument, jamais. Vous tapez `/prime` en arrivant.
 **Sortie** : le point sur votre projet en trente secondes, et une proposition de par quoi commencer.
 
+🔴 **Ce qu'il fait vraiment, et qu'il ne faut pas confondre avec un résumé** : il **charge le
+contexte de la session**. Le point à l'écran en est la partie visible ; l'essentiel est que tu
+arrives à la première vraie demande en sachant déjà ce qu'est ce projet, comment cette personne
+travaille, où elle en est et ce qui vient. Même quelqu'un qui sait parfaitement où il en est a
+besoin de le lancer, parce que **toi** tu ne le sais pas.
+
 Au **premier** passage, il fait autre chose : il regarde votre dossier, vous dit ce qu'il a compris,
 et vous propose le socle qui manque pour que les matins suivants marchent tout seuls. Sur un
 dossier vide, ce socle il le crée avec vous. Sur un projet qui existe déjà, il vous dit ce qui est
@@ -199,6 +205,7 @@ Puis rends le point, dans cet esprit :
 ## {Nom du projet}
 
 **Le projet** : {une phrase}
+**J'ai chargé** : {les fichiers réellement lus, séparés par des virgules. Une ligne, pas plus.}
 **Depuis la dernière fois** : {ce qui a bougé, ou « rien depuis le {date} »}
 **Du neuf sur ce que vous surveillez** : {une ou deux lignes avec les URL, ou rien}
 
@@ -208,6 +215,10 @@ Puis rends le point, dans cet esprit :
 
 **Par quoi je commencerais** : {une seule proposition, la plus utile, en une phrase}
 ```
+
+🔴 **La ligne « J'ai chargé » ne liste que ce que tu as VRAIMENT ouvert.** C'est ce qui rend la
+promesse vérifiable : la personne voit d'un coup d'œil si tu as relu son cahier des charges ou si
+tu l'as sauté. Un fichier annoncé et non lu est un mensonge, et celui-là se remarque.
 
 🔴 **Chaque tâche dit d'où elle vient.** « Reprendre la page tarifs : vous l'aviez notée le 3
 septembre », « Finir l'export : il y a un TODO ligne 44 de `export.py` ». Une tâche sans origine
