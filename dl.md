@@ -1,6 +1,6 @@
 ---
 name: explique
-description: "Utilise CE skill DÈS QUE l'utilisateur veut comprendre un concept : il dit « explique », « vulgarise », « c'est quoi », « comment marche », « je comprends rien à… », ou cite un sigle / une techno / un buzzword qu'il ne maîtrise pas, même sans demande explicite. Lancé SANS argument, il relit la conversation en cours, repère les concepts complexes qui y sont passés et fait choisir lequel expliquer avant d'écrire. Transforme le concept (technique, IA, business) en une page d'explication limpide, publiée en artifact (page web privée, lien à partager), avec analogie du quotidien et exemple concret, dans le ton IAPreneurs."
+description: "Utilise CE skill DÈS QUE l'utilisateur veut comprendre un concept : il dit « explique », « vulgarise », « c'est quoi », « comment marche », « je comprends rien à… », ou cite un sigle / une techno / un buzzword qu'il ne maîtrise pas, même sans demande explicite. Transforme n'importe quel concept (technique, IA, business) en une page d'explication limpide, publiée en artifact (une page web privée, avec un lien à partager), avec analogie du quotidien et exemple concret, dans le ton IAPreneurs."
 allowed-tools: Read, Write, WebFetch, Artifact
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: Read, Write, WebFetch, Artifact
 
 ## Pour quoi faire
 
-**Entrée** : un concept. Un mot, un sigle, une techno, un buzzword (« webhook », « RAG », « MCP », « API REST », « token »…). **Ou rien du tout** : lancé sans argument, le skill relit ce dont on vient de parler dans la conversation, repère ce qui a pu bloquer, et vous propose de choisir.
+**Entrée** : un concept. Un mot, un sigle, une techno, un buzzword (« webhook », « RAG », « MCP », « API REST », « token »…).
 **Sortie** : **une page**, publiée en artifact, que **n'importe qui comprend en 30 secondes** : une phrase qui dit l'essentiel, une analogie du quotidien, le concept démonté, un exemple qu'on peut vivre, et ce que ça change pour vous. Dans le ton chaleureux et direct d'IAPreneurs.
 
 L'effet magique : vous collez un mot que vous ne comprenez pas, vous ressortez avec une page claire, et un lien. Vous la relisez sur votre téléphone, vous l'envoyez à un client, à un associé, à la personne qui vous a posé la question.
@@ -24,35 +24,11 @@ La page est publiée avec l'outil **Artifact** de Claude Code : une page web hé
 > *(Instructions pour toi, le skill : le membre ne lit pas cette section. Ici « tu » = toi
 > qui exécutes ; « vous » = le membre à qui s'adresse l'explication finale.)*
 
-### Étape 1. Cerner le concept : deux cas, selon qu'on t'a donné un mot ou non
+### Étape 1. Cerner le concept
 
-**Cas A, le concept est donné** (en argument, ou nommé dans la phrase : « c'est quoi un RAG ? »).
 Identifie **ce qu'on te demande d'expliquer** et à quel niveau. Un mot isolé (« webhook ») ?
 Une comparaison (« la différence entre API et webhook ») ? Pose UNE question de cadrage seulement
 si c'est vraiment ambigu (ex. « token » = jeton d'auth ou token LLM ?). Sinon, enchaîne.
-
-**Cas B, aucun concept n'est donné** (`/explique` seul, « explique-moi », « je n'ai pas tout
-suivi »). Le sujet est dans la conversation en cours, pas dans la commande :
-
-1. **Relis la conversation** depuis le début, ou depuis le dernier changement de sujet : les
-   messages de la personne, tes propres réponses, les fichiers ou pages que vous avez lus
-   ensemble. Cherche ce qui a pu bloquer : un sigle passé sans explication, une techno ou un
-   outil cité comme allant de soi, un mot que **tu** as employé toi-même sans le définir, une
-   notion d'un document qu'on vient de lire.
-2. **Propose deux à quatre concepts candidats**, un par ligne, avec pour chacun **l'endroit où
-   il est apparu** (« cité dans le devis que vous m'avez fait lire », « je l'ai employé moi-même
-   il y a trois messages, sans le définir »). Mets en premier celui qui te semble le plus
-   probable, et dis pourquoi en quelques mots.
-3. **Demande lequel expliquer, et attends la réponse.** Une vraie question, qui termine ton
-   message : pas de « je pars sur celui-là sauf avis contraire », qui ne laisse pas le choix.
-   La personne peut en choisir un, en proposer un autre, ou en demander plusieurs (une page par
-   concept, ou une page qui les compare si elle le demande).
-4. Si la conversation ne contient **rien de complexe** (elle vient de commencer, ou tout était
-   déjà limpide), dis-le en une phrase et demande simplement le mot. Ne fabrique pas de candidat
-   pour avoir quelque chose à proposer.
-
-🔴 **Dans le cas B, tu n'écris aucune page avant que la personne ait confirmé le sujet.** Une
-explication brillante du mauvais concept est une explication ratée.
 
 ### Étape 2. (optionnel) Vérifier si c'est récent ou pointu
 
@@ -160,6 +136,5 @@ courte, une version « pour un enfant de 10 ans », ou un deuxième concept sur 
 les comparer. Une retouche se fait sur la même page : le lien ne change pas, tout le monde voit
 la nouvelle version.
 
-**Prochaine étape** : relance `/explique {autre concept}` pour le mot suivant, `/explique` seul
-pour qu'il relise la conversation et vous propose, ou demande « ajoute {concept} sur la même
-page » si vous voulez les comparer.
+**Prochaine étape** : relance `/explique {autre concept}` pour le mot suivant, ou demande
+« ajoute {concept} sur la même page » si vous voulez les comparer.
