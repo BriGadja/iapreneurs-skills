@@ -62,8 +62,11 @@ qui elle travaille. **Ne devine pas : ouvre.** Ce que tu dois pouvoir dire à la
   200 lignes, la doc officielle dit que ça consomme du contexte et que l'adhésion baisse.
 - **La mémoire** : la mémoire automatique de Claude Code est-elle active, et que contient-elle
   sur ce projet ?
-- **Le suivi** : un fichier qui porte le reste à faire (`STATUS.md` si `/prime` est passé, une
-  liste de tâches, rien).
+- **Le suivi** : 🔴 **cherche-le vraiment, quel que soit son nom.** Un fichier qui dit où en
+  sont les choses : ce qui est en cours, ce qui reste à faire, ce qui est fait. `STATUS.md` si
+  `/prime` est passé, mais aussi une liste de tâches, un fichier de tickets, un backlog, une
+  feuille de route, une section « à faire » dans un README. Dis ce que tu as trouvé, ou que tu
+  n'as rien trouvé.
 - **L'historique** : un dépôt git ? Ses derniers messages de commit disent-ils *pourquoi*, ou
   seulement *quoi* ? Y a-t-il des modifications jamais committées ?
 - **Les conversations** : Claude Code les garde sur la machine, puis les efface au bout d'une
@@ -76,6 +79,13 @@ Rends-le en une dizaine de lignes, sous la forme « ce qui existe / ce qui manqu
 **trois** suggestions tirées de CE projet, chacune avec sa raison. Jamais une liste de bonnes
 pratiques génériques ; rien de solide, rien à proposer. Termine par « je me trompe quelque
 part ? » et **attends la réponse**.
+
+🔴 **Aucun fichier de suivi trouvé ? Propose de le créer, sans attendre qu'on te le demande.**
+C'est ce qui permet à la prochaine session de savoir où en sont les choses. Propose un
+`STATUS.md` à la racine, avec trois sections, **En cours**, **À faire** et **Fait** (le même
+format que celui de `/prime`, pour que les deux skills lisent et écrivent le même fichier), et
+remplis-le avec ce que la conversation et le dossier t'ont appris. Crée-le dès qu'on te dit oui.
+Si la personne préfère un autre nom ou un autre format, prends le sien.
 
 🔴 **Interdit : inventer.** Un dossier vide se décrit comme vide. Un état plausible mais faux est
 pire qu'un état vide : il a l'air juste.
@@ -91,8 +101,10 @@ Propose des réponses possibles à chaque fois : c'est plus rapide qu'une page b
 2. **Ce qui mérite d'être gardé** d'une session à l'autre : des décisions, ses préférences, des
    faits sur ses clients ou ses dossiers, les erreurs corrigées, les chiffres de référence… Les
    corrections qu'elle te fait en cours de route sont souvent les plus précieuses.
-3. **Le reste à faire** : dans quel fichier ? `STATUS.md` si `/prime` est installé, un autre
-   fichier, ou nulle part.
+3. **Le suivi** : si l'étape A a trouvé un fichier de suivi, fais confirmer que c'est bien
+   celui-là. Sinon, et si la proposition de l'étape A n'a pas déjà été tranchée, recommande
+   franchement d'en créer un et explique pourquoi en une phrase. « Je n'en veux pas » reste une
+   réponse acceptée : note-la dans sa méthode, et ne le repropose plus.
 4. **Git** (seulement s'il y a un dépôt) : committer sans demander, montrer puis committer après
    accord, ou ne jamais toucher à git. Et pousser vers le dépôt distant : oui ou non.
 5. **La trace des conversations** : rien de plus, allonger la durée de conservation de Claude
@@ -170,8 +182,10 @@ faites, ce qui reste.
   retirer.
 - **La mémoire** : la mémoire automatique de Claude Code si elle est active, sinon l'endroit
   choisi dans sa méthode.
-- **Le suivi** : 🔴 **additif**. Ce qui a été tapé à la main reste mot pour mot ; ce qui est fini
-  passe dans « fait ».
+- **Le suivi** : 🔴 **tenu à chaque fermeture, même quand il ne reste rien à faire** : ce que
+  la session a terminé va dans « Fait ». Si le fichier prévu par sa méthode n'existe pas encore,
+  crée-le. 🔴 **Additif** : ce qui a été tapé à la main reste mot pour mot ; ce qui est fini passe
+  dans « Fait ».
 
 **3. Git**, s'il y a un dépôt et selon sa méthode :
 
@@ -186,8 +200,10 @@ faites, ce qui reste.
 **4. Ses tâches à elle**, celles de sa méthode, dans son ordre. Si l'une est devenue impossible
 (un fichier disparu), dis-le en une ligne plutôt que de la sauter en silence.
 
-**5. Si ce projet n'a encore ni fichier d'instructions ni suivi** (un `/close` installé pour tous
-les projets arrive un jour dans un dossier neuf), dis-le en une ligne et propose de les créer.
+**5. Si ce projet n'a pas de fichier de suivi, ou pas de fichier d'instructions** (un `/close`
+installé pour tous les projets arrive un jour dans un dossier neuf), propose de créer ce qui
+manque, sauf si sa méthode dit qu'elle n'en veut pas. Pour le suivi : un `STATUS.md` avec trois
+sections, En cours, À faire et Fait (le format de `/prime`).
 
 **6. Le récapitulatif**, dans cet esprit, une douzaine de lignes au plus :
 
