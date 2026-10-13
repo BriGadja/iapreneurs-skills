@@ -20,6 +20,7 @@ l'emplacement que vous aurez choisi.
 | [`/yt-vibe`](skills/yt-vibe/) | une URL YouTube, son transcript, ses images clés, son style | 🟡 `yt-dlp` + `ffmpeg` |
 | [`/devis`](skills/devis/) | une mission décrite avec vos mots, un devis PDF calculé au centime | 🟡 `python3` |
 | [`/explique`](skills/explique/) | un mot que vous ne comprenez pas, une page claire publiée avec un lien privé à partager | 🟢 aucune |
+| [`/automatise`](skills/automatise/) | une tâche que vous refaites à la main (ou rien : il lit votre dossier et en propose trois), la tâche programmée au bon endroit, essayée devant vous, et notée avec la façon de l'arrêter | 🟢 aucune |
 
 🟢 marche tout de suite. 🟡 un ou deux outils à installer : le prompt d'installation s'en occupe
 avec vous, et le skill revérifie leur présence à chaque lancement. Il ne plante jamais sans
