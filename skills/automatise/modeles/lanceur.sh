@@ -60,11 +60,14 @@ prevenir() {  # $1 = titre ; le corps arrive sur l'entrée standard
   return 0
 }
 
-echec() {  # $1 = raison
+echec() {  # $1 = raison, sans contenu ; $2 = détail (extrait du résultat), gardé sur le serveur
   journal "ÉCHEC : $1"
-  { printf 'Tâche « %s » en échec le %s\n%s\n\nDernières lignes du journal :\n' \
-      "$NOM" "$(date '+%Y-%m-%d %H:%M')" "$1"; tail -n 15 "$JOURNAL"; } > "$ICI/ECHEC.txt"
-  prevenir "Tâche « $NOM » : échec" < "$ICI/ECHEC.txt"
+  { printf 'Tâche « %s » en échec le %s\n%s\n%s\n\nDernières lignes du journal :\n' \
+      "$NOM" "$(date '+%Y-%m-%d %H:%M')" "$1" "${2:-}"; tail -n 15 "$JOURNAL"; } > "$ICI/ECHEC.txt"
+  # La notification ne porte que l'état et l'endroit où lire : le résultat et le journal peuvent
+  # contenir des données clients, et un sujet ntfy est public pour qui connaît son nom.
+  printf 'En échec le %s : %s\nDétails sur le serveur : %s\n' \
+    "$(date '+%Y-%m-%d %H:%M')" "$1" "$ICI/ECHEC.txt" | prevenir "Tâche « $NOM » : échec"
   exit 1
 }
 
@@ -90,7 +93,9 @@ else
   journal "pas de jeton : la connexion enregistrée par /login sur ce serveur sera utilisée"
 fi
 
-ARGS=(-p "$(cat "$ICI/consigne.md")" --permission-mode dontAsk --max-turns "$ECHANGES_MAX")
+# La consigne arrive par l'entrée standard, pas en argument : la liste des processus (ps) montre
+# les arguments à tous les comptes du serveur.
+ARGS=(-p --permission-mode dontAsk --max-turns "$ECHANGES_MAX")
 [ -n "$OUTILS" ] && ARGS+=(--allowedTools "$OUTILS")
 [ -n "$INTERDITS" ] && ARGS+=(--disallowedTools "$INTERDITS")
 [ -n "$MODELE" ] && ARGS+=(--model "$MODELE")
@@ -100,7 +105,7 @@ command -v timeout >/dev/null 2>&1 && DUREE=(timeout "$DUREE_MAX")
 
 SORTIE="$ICI/resultats/$(date '+%Y-%m-%d_%H%M').md"
 cd "$TRAVAIL" || echec "impossible d'entrer dans $TRAVAIL"
-${DUREE[@]+"${DUREE[@]}"} "$CLAUDE" "${ARGS[@]}" < /dev/null > "$SORTIE" 2>> "$JOURNAL"
+${DUREE[@]+"${DUREE[@]}"} "$CLAUDE" "${ARGS[@]}" < "$ICI/consigne.md" > "$SORTIE" 2>> "$JOURNAL"
 CODE=$?
 
 case "$CODE" in
@@ -108,7 +113,7 @@ case "$CODE" in
        rm -f "$ICI/ECHEC.txt"
        [ "$PREVENIR_SI_SUCCES" = "oui" ] && prevenir "Tâche « $NOM »" < "$SORTIE" ;;
   124) echec "arrêtée au bout de $DUREE_MAX (DUREE_MAX)" ;;
-  *)   echec "claude a terminé avec le code $CODE ; sa réponse : $(head -c 400 "$SORTIE")" ;;
+  *)   echec "claude a terminé avec le code $CODE" "Sa réponse : $(head -c 400 "$SORTIE")" ;;
 esac
 
 # Ménage : les résultats de plus de 30 jours, dans le dossier de CETTE tâche seulement.
