@@ -81,7 +81,8 @@ heure, fuseau) et **ce que « réussi » veut dire** pour elle.
 
 ### Étape 2. Choisir où elle tourne
 
-Deux questions, dans cet ordre. Réponds toi-même quand la tâche rend la réponse évidente, et
+Deux questions, dans cet ordre, puis une troisième si la tâche doit tourner sur l'ordinateur de la
+personne. Pour les deux premières, réponds toi-même quand la tâche rend la réponse évidente, et
 annonce ta réponse en une phrase pour qu'elle puisse la corriger.
 
 **Question 1 : la tâche doit-elle réfléchir à chaque passage ?** (lire et résumer, trier,
@@ -104,6 +105,22 @@ rédiger, juger)
   Claude Desktop** : elle tourne si l'application est ouverte et l'ordinateur éveillé.
 - **Oui**, sur **un serveur toujours allumé** → **le planificateur du serveur qui lance Claude
   Code sans fenêtre** (`claude -p`) : le plus robuste, et le plus de réglages.
+
+**Question 3, dès que la solution retenue tourne sur l'ordinateur de la personne** (un script
+lancé par son PC ou son Mac, une tâche Desktop) : **« Elle ne tournera pas quand votre ordinateur
+est éteint ou en veille. Ça vous va ? »** Pose-la telle quelle et attends la réponse : c'est un
+choix, pas une limite à signaler en passant.
+
+- **Oui** → on garde.
+- **Non** → propose ce qui tourne ordinateur éteint, et dis ce que chaque option coûte :
+  - un outil d'automatisation qu'elle utilise déjà (n8n, Make, Zapier) ou un serveur toujours
+    allumé, pour un script : rien de plus à payer ;
+  - **une routine cloud**, si la tâche n'a pas besoin des fichiers de cette machine, même quand
+    elle ne réfléchit pas : elle se crée depuis Claude Code avec `/schedule` quand la session est
+    connectée avec un abonnement. En échange, chaque passage consomme son forfait, et il faut un
+    dépôt GitHub ainsi que, pour joindre un site, l'ajouter aux domaines autorisés de la routine ;
+  - si la tâche a besoin des fichiers de cette machine : seulement un serveur, ou des fichiers
+    déplacés dans un dépôt GitHub que la routine clone.
 
 Les conditions et les pièges de chaque solution sont dans `references/voies.md` : **lis la
 section de la solution retenue avant d'aller plus loin**, et dis à la personne, en une ou deux

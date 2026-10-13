@@ -62,7 +62,10 @@ demain.
 ## B. Une routine cloud
 
 **Quand** : la tâche réfléchit, et n'a pas besoin des fichiers de cette machine. Elle lit le web,
-une boîte mail ou un outil par un connecteur, ou un dépôt GitHub.
+une boîte mail ou un outil par un connecteur, ou un dépôt GitHub. Aussi pour une tâche qui ne
+réfléchit pas (vérifier qu'un site répond) quand elle doit tourner ordinateur éteint et que la
+personne n'a ni serveur ni outil d'automatisation : elle paie alors en forfait ce qu'un script
+ferait gratuitement, dis-le.
 
 **Ce que c'est** : une session Claude Code complète qui démarre sur les serveurs d'Anthropic à
 l'heure dite, ordinateur éteint. Doc : https://code.claude.com/docs/en/routines
