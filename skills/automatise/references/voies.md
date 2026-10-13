@@ -74,16 +74,19 @@ l'heure dite, ordinateur éteint. Doc : https://code.claude.com/docs/en/routines
 - un abonnement Pro, Max, Team ou Enterprise, et une session connectée **avec ce compte claude.ai**.
   `/schedule` est caché si la session est connectée par une clé d'API (variable
   `ANTHROPIC_API_KEY`) ;
-- **un dépôt GitHub** : la documentation définit une routine comme « un prompt, un ou plusieurs
-  dépôts, et des connecteurs », et le dépôt est cloné à chaque passage. Si la personne n'a ni
-  GitHub ni dépôt, dis-le avant de commencer : c'est un coût d'entrée réel, et la tâche Desktop
-  (section C) peut suffire ;
+- **un dépôt GitHub, seulement si la tâche travaille sur des fichiers** : il est cloné à chaque
+  passage. Pour une tâche qui ne lit que le web ou des connecteurs, `/schedule` propose lui-même
+  de s'en passer (« skip repos entirely », constaté le 2026-10-13) ;
 - pour lire une boîte mail, un agenda, un Drive : le connecteur correspondant, ajouté sur
   https://claude.ai/customize/connectors. Un serveur MCP ajouté seulement dans le terminal
   (`claude mcp add`) n'existe pas pour une routine.
 
-**Programmer** : `/schedule` dans Claude Code (la conversation pose les questions et enregistre),
-ou le formulaire de https://claude.ai/code/routines. Le formulaire propose des fréquences toutes
+**Programmer** : `/schedule` dans Claude Code, suivi de la description complète (la doc donne
+l'exemple `/schedule daily PR review at 9am`) : la conversation pose les questions restantes et
+enregistre. Sans description, il ouvre un menu (Create, List, Update, Run). Ses vérifications
+préalables s'affichent en anglais (dossier hors dépôt git, serveurs MCP du terminal qui ne suivent
+pas la routine) : annonce-les en français avant de le lancer. Autre voie : le formulaire de
+https://claude.ai/code/routines. Le formulaire propose des fréquences toutes
 faites (toutes les heures, chaque jour, en semaine, chaque semaine) ; pour une autre fréquence,
 `/schedule update` accepte une expression cron. **Au moins une heure entre deux passages.**
 Choisis une heure qui ne tombe pas pile (8 h 07 plutôt que 8 h) : la doc prévient qu'une routine

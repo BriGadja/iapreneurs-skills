@@ -117,15 +117,16 @@ choix, pas une limite à signaler en passant.
     allumé, pour un script : rien de plus à payer ;
   - **une routine cloud**, si la tâche n'a pas besoin des fichiers de cette machine, même quand
     elle ne réfléchit pas : elle se crée depuis Claude Code avec `/schedule` quand la session est
-    connectée avec un abonnement. En échange, chaque passage consomme son forfait, et il faut un
-    dépôt GitHub ainsi que, pour joindre un site, l'ajouter aux domaines autorisés de la routine ;
+    connectée avec un abonnement. En échange, chaque passage consomme son forfait, et pour
+    joindre un site il faut l'ajouter aux domaines autorisés de la routine. Un dépôt GitHub
+    n'est nécessaire que si la tâche travaille sur des fichiers ;
   - si la tâche a besoin des fichiers de cette machine : seulement un serveur, ou des fichiers
     déplacés dans un dépôt GitHub que la routine clone.
 
 Les conditions et les pièges de chaque solution sont dans `references/voies.md` : **lis la
 section de la solution retenue avant d'aller plus loin**, et dis à la personne, en une ou deux
 lignes, la limite qui la concerne (« elle ne tournera pas si votre ordinateur est en veille à
-8 h », « il faut un dépôt GitHub »).
+8 h », « chaque passage consomme votre forfait »).
 
 🔴 **Jamais `/loop` ni une tâche de session pour un besoin durable** : elles s'arrêtent avec la
 session et expirent au bout de sept jours. Elles servent seulement à « surveille ça pendant que je
@@ -139,7 +140,8 @@ Seulement ce dont la solution retenue a besoin, en constatant, jamais en devinan
   SSH, pas d'écran, Linux sans bureau). Fais confirmer en une phrase ;
 - **script** : quel planificateur répond ici, quel langage est déjà installé. N'installe pas un
   langage pour l'occasion quand un autre est déjà là ;
-- **routine cloud** : le dossier est-il relié à un dépôt GitHub ? La session est-elle connectée
+- **routine cloud** : si la tâche travaille sur des fichiers, sont-ils dans un dépôt GitHub ? La
+  session est-elle connectée
   avec un compte claude.ai ? 🔴 Si une variable `ANTHROPIC_API_KEY` existe, dis-le (elle cache
   `/schedule`) **sans jamais afficher sa valeur** ;
 - **tâche Desktop** : cette session tourne-t-elle dans l'application Desktop, et as-tu un outil
@@ -194,6 +196,13 @@ dis ce qui bloque, et propose une autre solution de l'étape 2.
 ### Étape 7. Programmer, vérifier, noter
 
 1. **Programme la tâche**, après son accord.
+   Pour une routine cloud, lance `/schedule` **avec la description complète** (quoi, quand, avec
+   quel dépôt ou sans dépôt) : il passe alors à la création au lieu d'ouvrir un menu. 🔴
+   `/schedule` commence par ses propres vérifications et peut les afficher **en anglais** (« Not
+   in a git repo », « No MCP connectors for cloud routines »). Préviens la personne AVANT de le
+   lancer, en français : ce dossier n'est pas sur GitHub, et la routine s'en passe ; les outils
+   ajoutés à ce terminal ne la suivent pas, seuls les connecteurs de claude.ai la suivent. Ne
+   recopie jamais un de ces avertissements tel quel, et pose toute question en français.
 2. **Vérifie qu'elle est programmée en la relisant là où elle vit** (la table du planificateur,
    la liste des routines, le détail de la tâche Desktop). 🔴 Pas de mémoire : tu ne l'annonces
    programmée que si tu l'as vue programmée. Donne à la personne ses **trois prochaines
