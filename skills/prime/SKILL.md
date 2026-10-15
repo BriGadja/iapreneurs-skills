@@ -48,12 +48,12 @@ aucun compte.
 Trois choses à établir avant d'agir, dans l'ordre.
 
 **1. Est-ce un projet du kit ?** Si le dossier contient un `PRD.md` à la racine **et** un
-`docs/plans/` ou `docs/specs/`, il a été monté avec le kit Claude Code des IAPreneurs. Ce kit a
+`docs/plans/` ou `docs/specs/`, il a été monté avec le kit Claude Code de l'école Noésia. Ce kit a
 **son propre `/prime`**, meilleur que celui-ci sur ces projets-là : il connaît les phases, les
 SPECs, les décisions. S'il est masqué, c'est parce qu'un skill installé pour tous les projets passe
 avant un skill installé dans un projet. Dis-le en une fois, proprement :
 
-> « Ce projet vient du kit IAPreneurs, qui a son propre `/prime` : il connaît vos phases, vos SPECs
+> « Ce projet vient du kit Noésia, qui a son propre `/prime` : il connaît vos phases, vos SPECs
 > et vos décisions, et il est meilleur que moi ici. Il est masqué parce que je suis installé pour
 > tous vos projets. Pour lui rendre la main : supprimez `~/.claude/skills/prime/` et réinstallez-moi
 > projet par projet. Je continue quand même pour cette fois ? »

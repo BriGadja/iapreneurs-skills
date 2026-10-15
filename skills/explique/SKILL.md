@@ -1,15 +1,15 @@
 ---
 name: explique
-description: "Utilise CE skill DÈS QUE l'utilisateur veut comprendre un concept : il dit « explique », « vulgarise », « c'est quoi », « comment marche », « je comprends rien à… », ou cite un sigle / une techno / un buzzword qu'il ne maîtrise pas, même sans demande explicite. Lancé SANS argument, il relit la conversation en cours, repère les concepts complexes qui y sont passés et fait choisir lequel expliquer avant d'écrire. Transforme le concept (technique, IA, business) en une page d'explication limpide, publiée en artifact (page web privée, lien à partager), avec analogie du quotidien et exemple concret, dans le ton IAPreneurs."
+description: "Utilise CE skill DÈS QUE l'utilisateur veut comprendre un concept : il dit « explique », « vulgarise », « c'est quoi », « comment marche », « je comprends rien à… », ou cite un sigle / une techno / un buzzword qu'il ne maîtrise pas, même sans demande explicite. Lancé SANS argument, il relit la conversation en cours, repère les concepts complexes qui y sont passés et fait choisir lequel expliquer avant d'écrire. Transforme le concept (technique, IA, business) en une page d'explication limpide, publiée en artifact (page web privée, lien à partager), avec analogie du quotidien et exemple concret, dans le ton Noésia."
 allowed-tools: Read, Write, WebFetch, Artifact
 ---
 
-# /explique : n'importe quel concept, vulgarisé façon IAPreneurs, sur une page qu'on partage
+# /explique : n'importe quel concept, vulgarisé façon Noésia, sur une page qu'on partage
 
 ## Pour quoi faire
 
 **Entrée** : un concept. Un mot, un sigle, une techno, un buzzword (« webhook », « RAG », « MCP », « API REST », « token »…). **Ou rien du tout** : lancé sans argument, le skill relit ce dont on vient de parler dans la conversation, repère ce qui a pu bloquer, et vous propose de choisir.
-**Sortie** : **une page**, publiée en artifact, que **n'importe qui comprend en 30 secondes** : une phrase qui dit l'essentiel, une analogie du quotidien, le concept démonté, un exemple qu'on peut vivre, et ce que ça change pour vous. Dans le ton chaleureux et direct d'IAPreneurs.
+**Sortie** : **une page**, publiée en artifact, que **n'importe qui comprend en 30 secondes** : une phrase qui dit l'essentiel, une analogie du quotidien, le concept démonté, un exemple qu'on peut vivre, et ce que ça change pour vous. Dans le ton chaleureux et direct de Noésia.
 
 L'effet magique : vous collez un mot que vous ne comprenez pas, vous ressortez avec une page claire, et un lien. Vous la relisez sur votre téléphone, vous l'envoyez à un client, à un associé, à la personne qui vous a posé la question.
 
@@ -63,7 +63,7 @@ Ne jamais inventer : si tu ne sais pas et que le web ne répond pas, dis-le fran
 
 ### Étape 3. Rédiger selon le gabarit (à respecter au mot)
 
-Écris d'abord le texte, dans **cet ordre exact**. C'est ce gabarit qui fait le style IAPreneurs,
+Écris d'abord le texte, dans **cet ordre exact**. C'est ce gabarit qui fait le style Noésia,
 et c'est lui qui devient la structure de la page :
 
 1. **TL;DR en une phrase** : commence par « **En une phrase :** … ». Le lecteur pressé s'arrête là et a compris l'essentiel.
@@ -119,7 +119,7 @@ avec l'outil **Artifact** de Claude Code. Le contrat de la page :
 - **Lisible sur un téléphone** : c'est là que le lien sera ouvert la plupart du temps. Une seule
   colonne, texte large, marges, pas de défilement horizontal. Sobre et clair, en mode clair et en
   mode sombre : c'est une page de lecture, pas une plaquette.
-- **Aucune mention de la Boîte à Skills, d'IAPreneurs ni de Claude** sur la page : elle
+- **Aucune mention de la Boîte à Skills, de Noésia ni de Claude** sur la page : elle
   appartient à la personne qui l'a demandée, qui l'enverra peut-être à un client.
 
 Quand la page est publiée, ton message dans la conversation tient en trois lignes : le lien, la

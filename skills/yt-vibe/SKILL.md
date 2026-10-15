@@ -62,7 +62,7 @@ transmets sa sortie plutôt que de la reformuler.
 ## Étape 3. Analyser la vibe
 
 Regarde les images (`frames/*.jpg`) et lis le transcript (`transcript.vtt`), puis restitue en
-« vous », style IAPreneurs :
+« vous », style Noésia :
 
 - **L'ambiance en une phrase** (« tuto carré, fond clair, débit posé, zéro fioriture »).
 - **Le style visuel** : palette, montage, plans, incrustations, présence à l'écran.

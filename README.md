@@ -1,6 +1,6 @@
-# La Boîte à Skills, IAPreneurs
+# La Boîte à Skills, Noésia
 
-Des raccourcis prêts à l'emploi pour Claude Code, offerts à la communauté **IAPreneurs**.
+Des raccourcis prêts à l'emploi pour Claude Code, offerts aux élèves de l'école **Noésia**.
 Un dossier = un skill = une tâche.
 
 Ce dépôt est l'entrepôt : il ne contient que les skills. **L'installation se fait depuis Circle**,

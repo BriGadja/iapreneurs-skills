@@ -142,7 +142,7 @@ Puis écris sa méthode :
 ### Étape 1. Savoir où on en est
 
 1. **Projet du kit ?** Si le dossier contient un `PRD.md` à la racine **et** un `docs/plans/` ou
-   `docs/specs/`, il a été monté avec le kit Claude Code des IAPreneurs, qui a **son propre
+   `docs/specs/`, il a été monté avec le kit Claude Code de l'école Noésia, qui a **son propre
    `/close`** : il clôture une phase, met le PRD à jour et fait son propre tri de mémoire. Il est
    masqué parce qu'un skill installé pour tous les projets passe avant un skill de projet.
    Dis-le en une fois : pour lui rendre la main sur ce projet, il suffit d'installer celui-ci

@@ -1,6 +1,6 @@
 ---
 name: roast
-description: "Utilise CE skill DÈS QUE l'utilisateur veut un avis franc sur une page web : il colle une URL de landing page / site et dit « roast », « critique », « qu'est-ce qui cloche », « donne-moi un avis cash », « comment l'améliorer », ou demande un retour sans complaisance, même sans demande explicite. Produit une critique directe mais constructive + exactement 3 fixes priorisés, dans le ton IAPreneurs."
+description: "Utilise CE skill DÈS QUE l'utilisateur veut un avis franc sur une page web : il colle une URL de landing page / site et dit « roast », « critique », « qu'est-ce qui cloche », « donne-moi un avis cash », « comment l'améliorer », ou demande un retour sans complaisance, même sans demande explicite. Produit une critique directe mais constructive + exactement 3 fixes priorisés, dans le ton Noésia."
 allowed-tools: WebFetch, Read, Write
 ---
 
@@ -73,7 +73,7 @@ général (« le design est soigné »). Ce n'est pas de la politesse : un diagn
 pas le bon du mauvais n'est pas un diagnostic, c'est un format qui tourne à vide. Si tu ne trouves
 sincèrement rien, dis-le — c'est une information, et elle est brutale.
 
-Puis la critique, en « vous », ton IAPreneurs : **cash mais bienveillant**. On tape sur la page,
+Puis la critique, en « vous », ton Noésia : **cash mais bienveillant**. On tape sur la page,
 jamais sur la personne. 2-3 paragraphes qui disent ce qui ne va pas **et pourquoi ça coûte des
 conversions** : avec un « c'est-à-dire que… » pour rendre l'impact concret (« le titre parle de
 "solutions innovantes", c'est-à-dire que le visiteur ne sait toujours pas ce que vous vendez »).
